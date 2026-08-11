@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BYOPG -- Zero-Touch Payment Infrastructure</title>
+    <title>BYOPG — Zero-Touch Payment Infrastructure</title>
     <style>
         :root {
             --bg: #0a0a1a;
@@ -18,11 +18,13 @@
             --green: #22c55e;
             --green-glow: rgba(34,197,94,0.15);
             --red: #ef4444;
-            --red-glow: rgba(239,68,68,0.12);
-            --yellow: #eab308;
-            --yellow-glow: rgba(234,179,8,0.12);
             --blue: #3b82f6;
             --blue-glow: rgba(59,130,246,0.15);
+            --purple: #8b5cf6;
+            --purple-glow: rgba(139,92,246,0.15);
+            --green-border: rgba(34,197,94,0.4);
+            --blue-border: rgba(59,130,246,0.4);
+            --purple-border: rgba(139,92,246,0.4);
             --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             --gradient-2: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
             --gradient-3: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
@@ -93,69 +95,86 @@
             font-size: 18px;
             font-weight: 400;
             color: var(--text-muted);
-            max-width: 700px;
+            max-width: 750px;
             margin: 0 auto 40px;
+            line-height: 1.7;
         }
 
         .hero-stats {
-            display: flex;
-            justify-content: center;
-            gap: 48px;
-            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        .hero-stat { text-align: center; }
+        .stat-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px 16px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, border-color 0.2s;
+        }
 
-        .hero-stat-value {
-            font-size: 36px;
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .stat-number {
+            font-size: 28px;
             font-weight: 700;
-            color: var(--green);
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .hero-stat-label {
+        .stat-label {
             font-size: 13px;
             color: var(--text-muted);
             margin-top: 4px;
         }
 
         /* ========================================
-           SECTIONS
+           SECTION STYLES
            ======================================== */
-        .section { padding: 60px 0; }
-
-        .section-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent-light);
-            margin-bottom: 12px;
+        .section {
+            padding: 60px 0;
         }
 
         .section-title {
             font-size: 32px;
             font-weight: 700;
-            margin-bottom: 16px;
+            text-align: center;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .section-desc {
+        .section-subtitle {
+            text-align: center;
             color: var(--text-muted);
             font-size: 16px;
-            max-width: 640px;
             margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         /* ========================================
-           SIMULATION CONTAINER
+           SIMULATION
            ======================================== */
-        .sim-section { padding: 60px 0; }
-
-        .sim-outer {
+        .sim-container {
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             backdrop-filter: blur(10px);
             overflow: hidden;
-            position: relative;
+            margin-bottom: 40px;
         }
 
         .sim-header {
@@ -163,1125 +182,894 @@
             align-items: center;
             justify-content: space-between;
             padding: 16px 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid var(--glass-border);
             background: rgba(255,255,255,0.02);
-            flex-wrap: wrap;
-            gap: 12px;
         }
 
-        /* Stage Indicator */
-        .stage-indicator {
+        .sim-stage-indicator {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             align-items: center;
-            width: 100%;
-            margin-bottom: 8px;
         }
 
-        .stage-pill {
-            flex: 1;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            text-align: center;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
+        .sim-stage-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            transition: background 0.3s;
+        }
+
+        .sim-stage-dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .sim-stage-dot.completed {
+            background: var(--green);
+        }
+
+        .sim-stage-label {
+            font-size: 13px;
             color: var(--text-muted);
-            transition: all 0.4s ease;
-            white-space: nowrap;
-        }
-
-        .stage-pill.active {
-            background: rgba(99,102,241,0.15);
-            border-color: var(--accent);
-            color: var(--accent-light);
-        }
-
-        .stage-pill.completed {
-            background: rgba(34,197,94,0.1);
-            border-color: rgba(34,197,94,0.3);
-            color: var(--green);
-        }
-
-        .stage-chevron {
-            color: var(--text-muted);
-            font-size: 14px;
-            flex-shrink: 0;
+            margin-left: 8px;
         }
 
         .sim-progress {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .sim-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.15);
-            transition: all 0.4s ease;
-        }
-
-        .sim-dot.active {
-            background: var(--accent);
-            border-color: var(--accent-light);
-            box-shadow: 0 0 8px rgba(99,102,241,0.5);
-        }
-
-        .sim-dot.completed {
-            background: var(--green);
-            border-color: var(--green);
-            box-shadow: 0 0 6px rgba(34,197,94,0.4);
-        }
-
-        .sim-timer {
-            font-family: 'Courier New', monospace;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--accent-light);
-            background: rgba(99,102,241,0.1);
-            padding: 4px 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(99,102,241,0.2);
-            min-width: 60px;
-            text-align: center;
-        }
-
-        .sim-timer.done {
-            color: var(--green);
-            background: rgba(34,197,94,0.1);
-            border-color: rgba(34,197,94,0.2);
-        }
-
-        .sim-screen-label {
             font-size: 12px;
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .sim-body {
-            padding: 0;
-            min-height: 520px;
+            padding: 40px;
+            min-height: 420px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
 
-        .sim-screen {
-            display: none;
-            width: 100%;
-            padding: 40px;
-            animation: simFadeIn 0.5s ease;
-        }
-
-        .sim-screen.active { display: block; }
-
-        @keyframes simFadeIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ========================================
-           BUTTONS
-           ======================================== */
-        .sim-btn {
+        /* Action Labels */
+        .action-label {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: var(--gradient-1);
-            border: none;
-            color: white;
-            padding: 14px 32px;
+            gap: 6px;
+            padding: 5px 14px;
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 12px;
             font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
         }
 
-        .sim-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(99,102,241,0.3);
+        .label-customer {
+            background: rgba(59,130,246,0.15);
+            color: #60a5fa;
+            border: 1px solid var(--blue-border);
         }
 
-        .sim-btn.green { background: var(--gradient-2); }
-        .sim-btn.green:hover { box-shadow: 0 8px 24px rgba(34,197,94,0.3); }
+        .label-system {
+            background: rgba(139,92,246,0.15);
+            color: #a78bfa;
+            border: 1px solid var(--purple-border);
+        }
 
-        /* ========================================
-           STAGE 1: PARTNER ONBOARDING
-           ======================================== */
+        .label-notification {
+            background: rgba(34,197,94,0.15);
+            color: #4ade80;
+            border: 1px solid var(--green-border);
+        }
 
-        /* Screen 1.1 - Gateway Selection */
-        .gateway-selection {
+        .label-result {
+            background: rgba(251,191,36,0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251,191,36,0.4);
+        }
+
+        /* Screen content wrapper with colored border */
+        .screen-content {
+            width: 100%;
             max-width: 680px;
-            margin: 0 auto;
             text-align: center;
         }
 
-        .gateway-selection h3 {
+        .screen-content.blue-tint {
+            border-left: 3px solid var(--blue);
+            padding-left: 20px;
+            text-align: left;
+        }
+
+        .screen-content.purple-tint {
+            border-left: 3px solid var(--purple);
+            padding-left: 20px;
+            text-align: left;
+        }
+
+        .screen-content.green-tint {
+            border-left: 3px solid var(--green);
+            padding-left: 20px;
+            text-align: left;
+        }
+
+        .sim-screen-title {
             font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
         }
 
-        .gateway-selection .sub {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 32px;
-        }
-
-        .gateway-cards {
+        /* Gateway Cards */
+        .gateway-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 16px;
-            margin-bottom: 32px;
+            width: 100%;
+            margin-bottom: 24px;
         }
 
         .gateway-card {
             background: var(--surface);
             border: 2px solid var(--glass-border);
             border-radius: 14px;
-            padding: 24px 16px;
+            padding: 20px 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.25s;
             text-align: center;
         }
 
         .gateway-card:hover {
-            border-color: rgba(99,102,241,0.4);
-            background: rgba(99,102,241,0.06);
+            border-color: var(--accent);
+            background: var(--surface-hover);
+            transform: translateY(-2px);
         }
 
         .gateway-card.selected {
             border-color: var(--accent);
-            background: rgba(99,102,241,0.1);
+            background: rgba(99,102,241,0.12);
             box-shadow: 0 0 20px rgba(99,102,241,0.15);
         }
 
-        .gateway-card .gw-icon {
-            font-size: 36px;
-            margin-bottom: 12px;
+        .gateway-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
         }
 
-        .gateway-card .gw-name {
+        .gateway-name {
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 600;
+            color: #fff;
             margin-bottom: 4px;
         }
 
-        .gateway-card .gw-desc {
+        .gateway-desc {
             font-size: 12px;
             color: var(--text-muted);
             line-height: 1.5;
         }
 
-        .gateway-card .gw-check {
-            display: none;
-            margin-top: 10px;
-            color: var(--accent-light);
-            font-size: 18px;
-        }
-
-        .gateway-card.selected .gw-check { display: block; }
-
-        /* Screen 1.2 - Connection Setup */
-        .connection-setup {
-            max-width: 560px;
-            margin: 0 auto;
-        }
-
-        .connection-setup h3 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            text-align: center;
-        }
-
-        .connection-setup .sub {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 28px;
-            text-align: center;
-        }
-
-        .connection-form {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            padding: 28px;
-        }
-
-        .form-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 14px;
-        }
-
-        .form-row:last-child { border-bottom: none; }
-        .form-row .label { color: var(--text-muted); min-width: 140px; }
-        .form-row .value { font-weight: 600; text-align: right; word-break: break-all; }
-
-        .form-row .value.readonly {
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: var(--accent-light);
-            background: rgba(99,102,241,0.08);
-            padding: 4px 10px;
-            border-radius: 6px;
-        }
-
-        .form-row .value.masked {
-            letter-spacing: 2px;
-            color: var(--text-muted);
-        }
-
-        .connection-status-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 0;
-            font-size: 14px;
-        }
-
-        .status-indicator {
-            display: flex;
+        /* Buttons */
+        .sim-btn {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
-            font-weight: 600;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            transition: all 0.5s ease;
-        }
-
-        .status-dot.pre-connected {
-            background: var(--text-muted);
-            border: 2px solid rgba(255,255,255,0.2);
-        }
-
-        .status-dot.connected {
-            background: var(--green);
-            box-shadow: 0 0 8px rgba(34,197,94,0.5);
-        }
-
-        .connection-progress-msg {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 13px;
-            color: var(--accent-light);
-            min-height: 20px;
-        }
-
-        .connection-btn-area {
-            text-align: center;
-            margin-top: 24px;
-            min-height: 52px;
-        }
-
-        /* Screen 1.3 - Connection Verified */
-        .connection-verified {
-            max-width: 520px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .connection-verified h3 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: var(--green);
-        }
-
-        .verified-card {
-            background: var(--surface);
-            border: 1px solid rgba(34,197,94,0.2);
-            border-radius: 14px;
-            padding: 28px;
-            text-align: left;
-            margin-bottom: 24px;
-        }
-
-        .verified-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 14px;
-        }
-
-        .verified-row:last-child { border-bottom: none; }
-        .verified-row .label { color: var(--text-muted); }
-        .verified-row .value { font-weight: 600; }
-        .verified-row .value.ok { color: var(--green); }
-
-        .status-flow {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-            font-size: 12px;
-            color: var(--text-muted);
-            flex-wrap: wrap;
-        }
-
-        .status-flow .flow-step {
-            padding: 4px 10px;
-            border-radius: 6px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .status-flow .flow-step.current {
-            background: rgba(34,197,94,0.1);
-            border-color: rgba(34,197,94,0.3);
-            color: var(--green);
-        }
-
-        .status-flow .flow-arrow { color: var(--text-muted); }
-
-        /* ========================================
-           STAGE 2: AUTOMATION CONFIGURATION
-           ======================================== */
-
-        /* Screen 2.1 - Configure Automation */
-        .automation-config {
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .automation-config h3 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .automation-config .sub {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 28px;
-        }
-
-        .auto-trigger {
-            background: rgba(99,102,241,0.08);
-            border: 1px solid rgba(99,102,241,0.2);
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--accent-light);
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.5s ease;
-        }
-
-        .auto-trigger.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .auto-arrow {
-            text-align: center;
-            font-size: 20px;
-            color: var(--text-muted);
-            padding: 4px 0;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .auto-arrow.visible { opacity: 1; }
-
-        .auto-action-card {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 8px;
-            text-align: left;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.5s ease;
-        }
-
-        .auto-action-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .auto-action-card .action-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .auto-action-card .action-num {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: rgba(99,102,241,0.15);
-            color: var(--accent-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        .auto-action-card .action-title {
+            padding: 12px 28px;
+            background: var(--gradient-1);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            margin-top: 8px;
         }
 
-        .auto-action-card .action-io {
-            display: flex;
-            gap: 24px;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            padding-left: 38px;
+        .sim-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(99,102,241,0.4);
         }
 
-        .auto-action-card .action-io span { font-family: 'Courier New', monospace; }
-
-        .auto-action-card .action-desc {
-            font-size: 13px;
-            color: var(--text-muted);
-            padding-left: 38px;
+        .sim-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
-        .auto-reusable-note {
-            font-size: 13px;
-            color: var(--accent-light);
-            margin-top: 20px;
-            font-style: italic;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .auto-reusable-note.visible { opacity: 1; }
-
-        .auto-btn-area {
-            text-align: center;
-            margin-top: 24px;
-            min-height: 52px;
-        }
-
-        /* Screen 2.2 - Automation Active */
-        .automation-active {
+        /* Connection Form */
+        .conn-form {
+            width: 100%;
             max-width: 520px;
-            margin: 0 auto;
-            text-align: center;
+            text-align: left;
         }
 
-        .automation-active h3 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 24px;
+        .conn-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .conn-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            min-width: 140px;
+        }
+
+        .conn-value {
+            font-size: 14px;
+            color: var(--text);
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        .conn-value.masked {
+            letter-spacing: 2px;
+        }
+
+        .conn-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .conn-status.pending {
+            background: rgba(234,179,8,0.15);
+            color: #eab308;
+        }
+
+        .conn-status.connected {
+            background: rgba(34,197,94,0.15);
+            color: #22c55e;
+        }
+
+        .conn-testing {
+            text-align: center;
+            color: var(--accent-light);
+            font-size: 14px;
+            margin-top: 16px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .conn-testing.visible {
+            opacity: 1;
+        }
+
+        /* Lifecycle */
+        .lifecycle-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .lifecycle-node {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .lifecycle-node.active-node {
+            background: rgba(34,197,94,0.15);
+            border-color: var(--green);
             color: var(--green);
         }
 
-        .active-card {
-            background: var(--surface);
-            border: 1px solid rgba(34,197,94,0.2);
-            border-radius: 14px;
-            padding: 28px;
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        .active-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 14px;
-        }
-
-        .active-row:last-child { border-bottom: none; }
-        .active-row .label { color: var(--text-muted); }
-        .active-row .value { font-weight: 600; }
-        .active-row .value.ok { color: var(--green); }
-
-        .active-ready-msg {
-            font-size: 14px;
+        .lifecycle-arrow {
             color: var(--text-muted);
-            font-style: italic;
+            font-size: 14px;
         }
 
-        /* ========================================
-           STAGE 3: LIVE PAYMENT FLOW
-           ======================================== */
+        .lifecycle-note {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            max-width: 520px;
+            margin: 12px auto 0;
+            line-height: 1.6;
+        }
 
-        /* Screen 3.1 - Storefront */
-        .storefront {
+        /* Automation Cards */
+        .auto-pipeline {
+            width: 100%;
             max-width: 560px;
-            margin: 0 auto;
         }
 
-        .storefront-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            text-align: center;
-        }
-
-        .storefront-sub {
-            font-size: 13px;
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 28px;
-        }
-
-        .product-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .auto-card {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
             padding: 16px 20px;
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
             margin-bottom: 12px;
-            transition: border-color 0.2s;
-        }
-
-        .product-item.in-cart {
-            border-color: var(--accent);
-            background: rgba(99,102,241,0.08);
-        }
-
-        .product-info { display: flex; align-items: center; gap: 14px; }
-
-        .product-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
-        .product-name { font-size: 14px; font-weight: 600; }
-        .product-desc { font-size: 12px; color: var(--text-muted); }
-
-        .product-price {
-            font-size: 16px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .cart-badge {
-            font-size: 11px;
-            background: var(--accent);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin-left: 10px;
-        }
-
-        .cart-summary {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 24px;
-            padding: 20px 24px;
-            background: rgba(99,102,241,0.06);
-            border: 1px solid rgba(99,102,241,0.15);
-            border-radius: 12px;
-        }
-
-        .cart-total-label { font-size: 14px; color: var(--text-muted); }
-        .cart-total-value { font-size: 28px; font-weight: 700; color: var(--accent-light); }
-
-        .cart-gateway-note {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* Screen 3.2 - Payment Processing */
-        .payment-screen {
-            max-width: 440px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .payment-card {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 24px;
-        }
-
-        .payment-gateway-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .payment-card-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 14px;
-        }
-
-        .payment-card-row:last-child { border-bottom: none; }
-        .payment-card-row .label { color: var(--text-muted); }
-        .payment-card-row .value { font-weight: 600; }
-
-        .payment-spinner {
-            width: 48px;
-            height: 48px;
-            border: 3px solid rgba(99,102,241,0.2);
-            border-top-color: var(--accent-light);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 24px auto;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .payment-status {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 16px 0;
-            min-height: 28px;
-        }
-
-        .payment-status.success { color: var(--green); }
-
-        .payment-webhook {
-            font-size: 13px;
-            color: var(--accent-light);
             opacity: 0;
-            transition: opacity 0.4s ease;
+            transform: translateY(10px);
+            transition: all 0.5s;
         }
 
-        .payment-webhook.show { opacity: 1; }
-
-        /* Screen 3.3 - Pipeline */
-        .pipeline-screen {
-            max-width: 640px;
-            margin: 0 auto;
-        }
-
-        .pipeline-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            text-align: center;
-        }
-
-        .pipeline-sub {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 24px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .pipeline-log {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 20px 24px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 2;
-            min-height: 280px;
-        }
-
-        .log-line {
-            opacity: 0;
-            transform: translateX(-8px);
-            transition: all 0.4s ease;
-        }
-
-        .log-line.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .log-time { color: var(--text-muted); }
-        .log-check { color: var(--green); }
-        .log-spin { color: var(--yellow); }
-        .log-label { color: var(--text); }
-        .log-detail { color: var(--text-muted); font-size: 12px; }
-
-        .pipeline-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-            justify-content: center;
-        }
-
-        .pipeline-action {
-            background: rgba(99,102,241,0.08);
-            border: 1px solid rgba(99,102,241,0.2);
-            border-radius: 10px;
-            padding: 14px 20px;
-            text-align: center;
-            flex: 1;
-            max-width: 180px;
-            opacity: 0;
-            transform: translateY(8px);
-            transition: all 0.5s ease;
-        }
-
-        .pipeline-action.visible {
+        .auto-card.visible {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .pipeline-action.highlight {
+        .auto-card.highlight {
             border-color: var(--green);
             background: rgba(34,197,94,0.08);
         }
 
-        .pipeline-action-name {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--accent-light);
-        }
-
-        .pipeline-action.highlight .pipeline-action-name { color: var(--green); }
-
-        .pipeline-action-desc {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .pipeline-arrow {
+        .auto-card-header {
             display: flex;
             align-items: center;
-            color: var(--text-muted);
-            font-size: 16px;
-            opacity: 0;
-            transition: opacity 0.5s ease;
+            gap: 8px;
+            margin-bottom: 6px;
         }
 
-        .pipeline-arrow.visible { opacity: 1; }
+        .auto-card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            background: rgba(99,102,241,0.15);
+        }
 
-        /* Screen 3.4 - Email */
-        .email-screen {
-            max-width: 520px;
+        .auto-card-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .auto-card-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: 36px;
+        }
+
+        .auto-connector {
+            width: 2px;
+            height: 16px;
+            background: var(--glass-border);
             margin: 0 auto;
         }
 
-        .email-mockup {
-            background: rgba(255,255,255,0.03);
+        .auto-connector.visible {
+            background: var(--accent);
+        }
+
+        .auto-note {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 16px;
+            padding: 12px;
+            background: rgba(99,102,241,0.06);
+            border-radius: 10px;
+            border: 1px solid rgba(99,102,241,0.15);
+            line-height: 1.5;
+        }
+
+        /* Status Summary */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: var(--surface);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .status-item .s-label {
+            color: var(--text-muted);
+        }
+
+        .status-item .s-value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .status-item .s-value.green { color: var(--green); }
+
+        /* Storefront */
+        .storefront {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .product-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: var(--surface);
             border: 1px solid var(--glass-border);
-            border-radius: 16px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: border-color 0.2s;
+        }
+
+        .product-row.in-cart {
+            border-color: var(--accent);
+            background: rgba(99,102,241,0.08);
+        }
+
+        .product-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .product-price {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--accent-light);
+        }
+
+        .cart-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            margin-top: 8px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .cart-total-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .cart-total-amount {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .payment-via {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        /* Payment Processing */
+        .payment-processing {
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+        }
+
+        .payment-card-display {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 24px;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .payment-detail {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .payment-detail .pd-label {
+            color: var(--text-muted);
+        }
+
+        .payment-detail .pd-value {
+            color: #fff;
+            font-weight: 500;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        .payment-spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--glass-border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            margin: 16px auto;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .payment-status {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 12px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .payment-status.visible { opacity: 1; }
+        .payment-status.success { color: var(--green); }
+        .payment-status.webhook { color: var(--accent-light); font-size: 13px; font-weight: 400; }
+
+        /* Terminal */
+        .terminal {
+            width: 100%;
+            max-width: 620px;
+            background: #0d0d1a;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
             overflow: hidden;
         }
 
-        .email-toolbar {
+        .terminal-bar {
             display: flex;
+            align-items: center;
             gap: 6px;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: rgba(255,255,255,0.03);
             border-bottom: 1px solid rgba(255,255,255,0.06);
         }
 
-        .email-toolbar-dot {
+        .terminal-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
         }
 
-        .email-header-area {
-            padding: 20px 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+        .terminal-dot.r { background: #ef4444; }
+        .terminal-dot.y { background: #eab308; }
+        .terminal-dot.g { background: #22c55e; }
+
+        .terminal-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: 8px;
         }
 
-        .email-field {
-            display: flex;
-            gap: 12px;
-            font-size: 13px;
-            padding: 4px 0;
-        }
-
-        .email-field .label { color: var(--text-muted); min-width: 60px; }
-        .email-field .value { color: var(--text); }
-
-        .email-subject {
-            font-size: 16px;
-            font-weight: 700;
-            margin-top: 12px;
-        }
-
-        .email-body-area { padding: 24px; }
-
-        .email-body-area p {
-            font-size: 14px;
-            color: var(--text);
-            margin-bottom: 16px;
-            line-height: 1.7;
-        }
-
-        .email-invoice-table {
-            display: flex;
-            gap: 24px;
+        .terminal-body {
             padding: 16px 20px;
-            background: rgba(99,102,241,0.06);
-            border: 1px solid rgba(99,102,241,0.12);
-            border-radius: 10px;
-            margin-bottom: 20px;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
             font-size: 13px;
+            line-height: 2;
+            min-height: 240px;
         }
 
-        .email-invoice-item { text-align: center; }
-        .email-invoice-item .label { color: var(--text-muted); font-size: 11px; }
-        .email-invoice-item .value { font-weight: 700; margin-top: 2px; }
-        .email-invoice-item .value.paid { color: var(--green); }
-
-        .email-cta {
-            display: inline-block;
-            background: var(--gradient-1);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Screen 3.5 - Product Live */
-        .live-screen {
-            max-width: 560px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .chat-widget-mockup {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 28px;
-            text-align: left;
-        }
-
-        .chat-header {
-            background: var(--gradient-1);
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .chat-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .chat-header-text { color: white; }
-        .chat-header-text .name { font-size: 14px; font-weight: 700; }
-        .chat-header-text .status { font-size: 11px; opacity: 0.85; }
-
-        .chat-messages {
-            padding: 20px;
-            min-height: 100px;
-        }
-
-        .chat-bubble {
-            background: rgba(99,102,241,0.1);
-            border: 1px solid rgba(99,102,241,0.15);
-            border-radius: 16px 16px 16px 4px;
-            padding: 14px 18px;
-            font-size: 14px;
-            line-height: 1.6;
-            max-width: 85%;
-        }
-
-        .chat-input-area {
-            padding: 12px 16px;
-            border-top: 1px solid rgba(255,255,255,0.06);
+        .term-line {
+            opacity: 0;
+            transition: opacity 0.3s;
             display: flex;
             gap: 8px;
         }
 
-        .chat-input {
-            flex: 1;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 10px 16px;
-            font-size: 13px;
+        .term-line.visible { opacity: 1; }
+
+        .term-time {
             color: var(--text-muted);
+            min-width: 48px;
         }
 
-        .chat-send {
-            width: 36px;
-            height: 36px;
+        .term-check {
+            color: var(--green);
+        }
+
+        .term-spin {
+            color: var(--accent-light);
+        }
+
+        .term-text {
+            color: var(--text);
+        }
+
+        .term-text.dim { color: var(--text-muted); }
+
+        .pipeline-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .pipeline-action-card {
+            padding: 10px 12px;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .pipeline-action-card.lit {
+            border-color: var(--green);
+            color: var(--green);
+            background: rgba(34,197,94,0.08);
+        }
+
+        .pipeline-big-label {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-light);
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(99,102,241,0.08);
+            border-radius: 10px;
+            border: 1px solid rgba(99,102,241,0.2);
+        }
+
+        /* Email Mockup */
+        .email-mockup {
+            width: 100%;
+            max-width: 520px;
+            background: #111127;
+            border: 1px solid var(--green-border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .email-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: rgba(34,197,94,0.04);
+        }
+
+        .email-field {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .email-field span {
+            color: var(--text);
+        }
+
+        .email-subject {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-top: 8px;
+        }
+
+        .email-body {
+            padding: 20px;
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.8;
+        }
+
+        .email-invoice-row {
+            display: flex;
+            gap: 20px;
+            padding: 12px 16px;
+            background: var(--surface);
+            border-radius: 8px;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+
+        .email-invoice-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .email-invoice-item .ei-label {
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .email-invoice-item .ei-value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .email-cta {
+            display: inline-block;
+            padding: 10px 24px;
+            background: var(--gradient-2);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 12px;
+        }
+
+        .email-footer {
+            padding: 12px 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Product Live */
+        .product-live {
+            width: 100%;
+            max-width: 520px;
+            text-align: center;
+        }
+
+        .chat-widget {
+            background: #111127;
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .chat-bubble {
+            display: inline-block;
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.25);
+            border-radius: 12px 12px 12px 4px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: var(--text);
+            max-width: 85%;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .chat-avatar {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: var(--accent);
-            border: none;
-            color: white;
+            background: var(--gradient-1);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 14px;
+        }
+
+        .chat-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .chat-online {
+            font-size: 11px;
+            color: var(--green);
         }
 
         .live-stats {
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
         }
 
-        .live-stat { text-align: center; }
+        .live-stat {
+            padding: 12px;
+            background: var(--surface);
+            border-radius: 8px;
+            text-align: center;
+        }
 
-        .live-stat-value { font-size: 22px; font-weight: 700; }
-        .live-stat-value.green { color: var(--green); }
-        .live-stat-value.accent { color: var(--accent-light); }
+        .live-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--green);
+        }
 
         .live-stat-label {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-top: 2px;
         }
 
         .live-message {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--text-muted);
-            font-style: italic;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
             line-height: 1.6;
-        }
-
-        .live-gateway-note {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 24px;
+            font-style: italic;
         }
 
         /* ========================================
            BEFORE / AFTER
            ======================================== */
-        .comparison {
+        .ba-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            margin-top: 40px;
+            gap: 24px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .comparison-card {
+        .ba-card {
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: 16px;
-            padding: 32px;
+            padding: 28px;
             backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
         }
 
-        .comparison-card.before { border-color: rgba(239,68,68,0.2); }
-
-        .comparison-card.before::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: var(--red);
+        .ba-card.before {
+            border-color: rgba(239,68,68,0.3);
         }
 
-        .comparison-card.after { border-color: rgba(34,197,94,0.2); }
-
-        .comparison-card.after::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: var(--green);
+        .ba-card.after {
+            border-color: rgba(34,197,94,0.3);
         }
 
-        .comparison-card h3 { font-size: 20px; margin-bottom: 8px; }
-
-        .comparison-card .subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 24px;
+        .ba-header {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
         }
 
-        .step-list { list-style: none; }
+        .ba-header.red { color: var(--red); }
+        .ba-header.green { color: var(--green); }
 
-        .step-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 14px;
-        }
-
-        .step-list li:last-child { border-bottom: none; }
-
-        .step-num {
-            min-width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
+        .ba-big {
+            font-size: 36px;
             font-weight: 700;
-            flex-shrink: 0;
+            color: #fff;
+            margin-bottom: 4px;
         }
 
-        .before .step-num { background: var(--red-glow); color: var(--red); }
-        .after .step-num { background: var(--green-glow); color: var(--green); }
-
-        .step-time {
-            margin-left: auto;
-            font-size: 12px;
+        .ba-detail {
+            font-size: 14px;
             color: var(--text-muted);
-            white-space: nowrap;
         }
 
-        .comparison-footer {
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255,255,255,0.08);
+        .ba-steps {
+            margin-top: 16px;
+        }
+
+        .ba-step {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+            color: var(--text-muted);
         }
 
-        .comparison-footer .total-time { font-size: 24px; font-weight: 700; }
-        .before .total-time { color: var(--red); }
-        .after .total-time { color: var(--green); }
-        .comparison-footer .total-label { font-size: 12px; color: var(--text-muted); }
+        .ba-step-icon {
+            font-size: 14px;
+        }
 
         /* ========================================
            PARTNER CARDS
@@ -1289,185 +1077,156 @@
         .partner-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            margin-top: 40px;
+            gap: 20px;
         }
 
         .partner-card {
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: 16px;
-            padding: 28px;
+            padding: 24px;
             backdrop-filter: blur(10px);
-            transition: transform 0.2s, border-color 0.2s;
+            transition: transform 0.2s;
         }
 
         .partner-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent);
+            transform: translateY(-2px);
         }
 
-        .partner-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
+        .partner-flag {
+            font-size: 28px;
+            margin-bottom: 8px;
         }
 
-        .partner-flag { font-size: 28px; }
-        .partner-name { font-size: 18px; font-weight: 700; }
-        .partner-sub { font-size: 12px; color: var(--text-muted); }
+        .partner-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
 
-        .partner-detail {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        .partner-gateway {
             font-size: 13px;
+            color: var(--accent-light);
+            margin-bottom: 12px;
         }
 
-        .partner-detail:last-child { border-bottom: none; }
-        .partner-detail-label { color: var(--text-muted); }
-        .partner-detail-value { font-weight: 600; }
+        .partner-stats {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
 
         .partner-status {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 700;
-            margin-top: 16px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
-        .status-live { background: var(--green-glow); color: var(--green); }
-        .status-requested { background: var(--yellow-glow); color: var(--yellow); }
-        .status-active { background: var(--blue-glow); color: var(--blue); }
+        .partner-status.delivered {
+            background: rgba(34,197,94,0.15);
+            color: var(--green);
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+
+        .partner-status.pipeline {
+            background: rgba(99,102,241,0.15);
+            color: var(--accent-light);
+            border: 1px solid rgba(99,102,241,0.3);
+        }
+
+        .partner-status.next {
+            background: rgba(234,179,8,0.15);
+            color: #eab308;
+            border: 1px solid rgba(234,179,8,0.3);
+        }
 
         /* ========================================
-           IMPACT METRICS
+           IMPACT CARDS
            ======================================== */
         .impact-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-            margin-top: 40px;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         .impact-card {
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: 16px;
-            padding: 28px;
-            text-align: center;
+            padding: 24px;
             backdrop-filter: blur(10px);
         }
 
-        .impact-value { font-size: 36px; font-weight: 700; margin-bottom: 4px; }
-        .impact-label { font-size: 13px; color: var(--text-muted); }
+        .impact-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
 
-        .impact-benchmark {
-            font-size: 11px;
-            color: var(--accent-light);
-            margin-top: 8px;
+        .impact-text {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.7;
         }
 
         /* ========================================
-           CONNECTION LIFECYCLE
+           CONNECTION LIFECYCLE (ref section)
            ======================================== */
-        .lifecycle-container {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 48px;
-            margin-top: 40px;
-            backdrop-filter: blur(10px);
+        .lifecycle-section {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
         }
 
-        .lifecycle-flow {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin: 32px 0;
-            flex-wrap: wrap;
+        .lifecycle-section .lifecycle-flow {
+            margin: 24px 0;
         }
 
-        .lifecycle-node {
-            padding: 14px 22px;
-            border-radius: 12px;
+        .lifecycle-section .lifecycle-node {
+            padding: 10px 20px;
             font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            min-width: 140px;
-        }
-
-        .lifecycle-node.pre { background: rgba(136,136,164,0.15); border: 1px solid rgba(136,136,164,0.3); color: var(--text-muted); }
-        .lifecycle-node.connected { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--green); }
-        .lifecycle-node.disconnected { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); color: var(--yellow); }
-        .lifecycle-node.deleted { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
-
-        .lifecycle-arrow {
-            color: var(--text-muted);
-            font-size: 18px;
-        }
-
-        .lifecycle-note {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            line-height: 1.7;
         }
 
         /* ========================================
            ARCHITECTURE
            ======================================== */
-        .arch-container {
+        .arch-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .arch-node {
+            padding: 10px 18px;
             background: var(--glass);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 48px;
-            margin-top: 40px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
             backdrop-filter: blur(10px);
         }
 
-        .arch-flow {
-            display: flex;
-            align-items: stretch;
-            justify-content: center;
-            gap: 16px;
-            margin: 32px 0;
+        .arch-node.highlight-node {
+            border-color: var(--accent);
+            color: var(--accent-light);
         }
 
-        .arch-block {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            flex: 1;
-            max-width: 200px;
-        }
-
-        .arch-block h4 { font-size: 14px; color: var(--accent-light); margin-bottom: 8px; }
-        .arch-block p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
-
-        .arch-arrow-h {
-            display: flex;
-            align-items: center;
-            color: var(--green);
-            font-size: 20px;
-        }
-
-        .arch-note {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.06);
+        .arch-arrow {
+            color: var(--accent);
+            font-size: 16px;
         }
 
         /* ========================================
@@ -1475,21 +1234,37 @@
            ======================================== */
         .pm-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-top: 40px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
         }
 
         .pm-card {
             background: var(--glass);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 22px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, border-color 0.2s;
         }
 
-        .pm-card h4 { font-size: 14px; color: var(--accent-light); margin-bottom: 8px; }
+        .pm-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
 
-        .pm-card p {
+        .pm-card-icon {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .pm-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .pm-card-desc {
             font-size: 13px;
             color: var(--text-muted);
             line-height: 1.6;
@@ -1500,1298 +1275,824 @@
            ======================================== */
         .footer {
             text-align: center;
-            padding: 60px 0;
-            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 60px 0 40px;
+            border-top: 1px solid var(--glass-border);
             margin-top: 40px;
         }
 
-        .footer p { color: var(--text-muted); font-size: 13px; }
-
-        .footer a {
-            color: var(--accent-light);
-            text-decoration: none;
+        .footer-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
         }
 
-        .footer a:hover { text-decoration: underline; }
+        .footer-role {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            font-size: 14px;
+            color: var(--accent-light);
+            text-decoration: none;
+            padding: 6px 14px;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .footer-link:hover {
+            background: var(--surface-hover);
+            border-color: var(--accent);
+        }
 
         /* ========================================
            RESPONSIVE
            ======================================== */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 38px; }
+            .gateway-grid { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto 24px; }
+            .partner-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+            .pm-grid { grid-template-columns: repeat(2, 1fr); }
+            .pipeline-actions { grid-template-columns: 1fr; max-width: 260px; margin: 16px auto 0; }
+        }
+
         @media (max-width: 768px) {
-            .hero h1 { font-size: 32px; }
-            .hero-stats { flex-direction: column; gap: 20px; }
-            .comparison { grid-template-columns: 1fr; }
-            .partner-grid { grid-template-columns: 1fr; }
-            .impact-grid { grid-template-columns: repeat(2, 1fr); }
-            .arch-flow { flex-direction: column; align-items: center; }
-            .arch-arrow-h { transform: rotate(90deg); }
+            .hero { padding: 50px 0 40px; }
+            .hero h1 { font-size: 30px; }
+            .hero h2 { font-size: 15px; }
+            .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .stat-number { font-size: 22px; }
+            .section-title { font-size: 24px; }
+            .sim-body { padding: 24px 16px; }
+            .sim-screen-title { font-size: 18px; }
+            .ba-grid { grid-template-columns: 1fr; }
+            .impact-grid { grid-template-columns: 1fr; }
             .pm-grid { grid-template-columns: 1fr; }
-            .sim-body { min-height: auto; }
-            .sim-screen { padding: 24px 16px; }
-            .gateway-cards { grid-template-columns: 1fr; }
-            .pipeline-actions { flex-direction: column; align-items: center; }
-            .pipeline-arrow { transform: rotate(90deg); }
-            .pipeline-action { max-width: 100%; }
-            .email-invoice-table { flex-direction: column; gap: 12px; }
-            .live-stats { flex-direction: column; gap: 16px; }
-            .cart-summary { flex-direction: column; gap: 12px; text-align: center; }
-            .payment-card-row { font-size: 13px; }
-            .lifecycle-flow { flex-direction: column; gap: 8px; }
-            .lifecycle-arrow { transform: rotate(90deg); }
-            .stage-indicator { flex-direction: column; gap: 4px; }
-            .stage-chevron { transform: rotate(90deg); }
-            .form-row { flex-direction: column; gap: 6px; align-items: flex-start; }
-            .form-row .value { text-align: left; }
+            .live-stats { grid-template-columns: repeat(2, 1fr); }
+            .status-grid { grid-template-columns: 1fr; }
+            .arch-flow { flex-direction: column; }
+            .arch-arrow { transform: rotate(90deg); }
         }
 
         @media (max-width: 480px) {
-            .hero h1 { font-size: 26px; }
-            .section-title { font-size: 24px; }
-            .impact-grid { grid-template-columns: 1fr; }
-            .sim-header { flex-direction: column; gap: 10px; text-align: center; }
+            .hero h1 { font-size: 24px; }
+            .stat-card { padding: 16px 12px; }
+            .stat-number { font-size: 20px; }
+            .sim-body { padding: 20px 12px; min-height: 360px; }
+            .gateway-grid { max-width: 100%; }
+            .email-mockup { border-radius: 10px; }
+            .terminal { border-radius: 10px; }
+            .terminal-body { font-size: 11px; padding: 12px; }
+            .lifecycle-flow { flex-direction: column; gap: 4px; }
+            .lifecycle-arrow { transform: rotate(90deg); }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.3); }
+            50% { box-shadow: 0 0 12px 4px rgba(34,197,94,0.15); }
+        }
+
+        .pulse-green {
+            animation: pulse-green 2s ease-in-out infinite;
         }
     </style>
 </head>
 <body>
 
-<!-- ========================================
-     PART 1: HERO
-     ======================================== -->
-<section class="hero">
-    <div class="container">
-        <div class="hero-badge">Product Manager Portfolio -- Infrastructure Design</div>
-        <h1>Zero-Touch Payment Infrastructure<br>(BYOPG)</h1>
-        <h2>Bring Your Own Payment Gateway -- from platform connection to live activation in under 5 minutes</h2>
-        <div class="hero-stats">
-            <div class="hero-stat">
-                <div class="hero-stat-value">24h &rarr; 5min</div>
-                <div class="hero-stat-label">Activation Time</div>
-            </div>
-            <div class="hero-stat">
-                <div class="hero-stat-value">6 &rarr; 0</div>
-                <div class="hero-stat-label">Manual Steps</div>
-            </div>
-            <div class="hero-stat">
-                <div class="hero-stat-value">3</div>
-                <div class="hero-stat-label">Payment Gateways</div>
-            </div>
-            <div class="hero-stat">
-                <div class="hero-stat-value">650K+</div>
-                <div class="hero-stat-label">SMBs Served</div>
+    <!-- ============================================
+         HERO
+         ============================================ -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">Product Manager Portfolio</div>
+            <h1>Zero-Touch Payment Infrastructure (BYOPG)</h1>
+            <h2>Bring Your Own Payment Gateway — designed to compress partner onboarding from 24 hours to under 5 minutes as integrations go live</h2>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-number">24h → &lt;5min</div>
+                    <div class="stat-label">Designed onboarding time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">6 → 0</div>
+                    <div class="stat-label">Manual steps automated</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Payment gateways (Wix, PayFast, Stripe)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">650K+</div>
+                    <div class="stat-label">Addressable SMBs</div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- ========================================
-     PART 2: FULL INTERACTIVE SIMULATION
-     ======================================== -->
-<section class="sim-section">
-    <div class="container">
-        <div class="section-label">Interactive Simulation</div>
-        <div class="section-title">Experience the Complete Payment Infrastructure Journey</div>
-        <div class="section-desc">From partner onboarding through automation configuration to a live customer payment -- click through every step.</div>
+    <!-- ============================================
+         INTERACTIVE SIMULATION
+         ============================================ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Interactive Simulation</h2>
+            <p class="section-subtitle">Walk through the complete BYOPG flow — from gateway selection to a live product activation</p>
 
-        <div class="sim-outer">
-            <div class="sim-header">
-                <!-- Stage Indicator -->
-                <div class="stage-indicator">
-                    <div class="stage-pill active" id="stage1pill">Stage 1: Partner Onboarding</div>
-                    <div class="stage-chevron">&rarr;</div>
-                    <div class="stage-pill" id="stage2pill">Stage 2: Automation Configuration</div>
-                    <div class="stage-chevron">&rarr;</div>
-                    <div class="stage-pill" id="stage3pill">Stage 3: Live Payment Flow</div>
-                </div>
-
-                <!-- Screen dots + timer -->
-                <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-                    <div class="sim-progress">
-                        <div class="sim-dot active" id="dot0"></div>
-                        <div class="sim-dot" id="dot1"></div>
-                        <div class="sim-dot" id="dot2"></div>
-                        <div class="sim-dot" id="dot3"></div>
-                        <div class="sim-dot" id="dot4"></div>
-                        <div class="sim-dot" id="dot5"></div>
-                        <div class="sim-dot" id="dot6"></div>
-                        <div class="sim-dot" id="dot7"></div>
-                        <div class="sim-dot" id="dot8"></div>
-                        <div class="sim-dot" id="dot9"></div>
+            <div class="sim-container">
+                <div class="sim-header">
+                    <div class="sim-stage-indicator">
+                        <div class="sim-stage-dot active" id="dot-1"></div>
+                        <div class="sim-stage-dot" id="dot-2"></div>
+                        <div class="sim-stage-dot" id="dot-3"></div>
+                        <span class="sim-stage-label" id="stage-label">Stage 1: Partner Onboarding</span>
                     </div>
-                    <div class="sim-screen-label" id="simLabel">1.1 -- Choose Your Payment Gateway</div>
-                    <div class="sim-timer" id="simTimer">0:00</div>
+                    <div class="sim-progress" id="sim-progress">Screen 1 of 10</div>
                 </div>
-            </div>
-
-            <div class="sim-body">
-
-                <!-- ================================
-                     STAGE 1: PARTNER ONBOARDING
-                     ================================ -->
-
-                <!-- Screen 1.1: Choose Your Payment Gateway -->
-                <div class="sim-screen active" id="screen0">
-                    <div class="gateway-selection">
-                        <h3>Choose Your Payment Gateway</h3>
-                        <div class="sub">Select the payment system your partner uses. Each gateway connects via the same universal integration.</div>
-
-                        <div class="gateway-cards">
-                            <div class="gateway-card selected" id="gw-wix" onclick="selectGateway('wix')">
-                                <div class="gw-icon">&#128179;</div>
-                                <div class="gw-name">Wix Payments</div>
-                                <div class="gw-desc">For e-commerce partners<br>US / global markets</div>
-                                <div class="gw-check">&#10003; Selected</div>
-                            </div>
-                            <div class="gateway-card" id="gw-payfast" onclick="selectGateway('payfast')">
-                                <div class="gw-icon">&#127757;</div>
-                                <div class="gw-name">PayFast</div>
-                                <div class="gw-desc">For African / emerging<br>market partners</div>
-                                <div class="gw-check">&#10003; Selected</div>
-                            </div>
-                            <div class="gateway-card" id="gw-stripe" onclick="selectGateway('stripe')">
-                                <div class="gw-icon">&#9889;</div>
-                                <div class="gw-name">Stripe Connect</div>
-                                <div class="gw-desc">For enterprise / European<br>partners</div>
-                                <div class="gw-check">&#10003; Selected</div>
-                            </div>
-                        </div>
-
-                        <button class="sim-btn" onclick="goToScreen(1)">Connect Gateway &rarr;</button>
-                    </div>
+                <div class="sim-body" id="sim-body">
+                    <!-- Screens rendered by JS -->
                 </div>
-
-                <!-- Screen 1.2: Platform Connection Setup -->
-                <div class="sim-screen" id="screen1">
-                    <div class="connection-setup">
-                        <h3>Platform Connection Setup</h3>
-                        <div class="sub">Connecting <span id="setupGatewayName">Wix Payments</span> to the platform</div>
-
-                        <div class="connection-form">
-                            <div class="form-row">
-                                <span class="label">Connection Method</span>
-                                <span class="value">OAuth 2.0 (auto-detected)</span>
-                            </div>
-                            <div class="form-row">
-                                <span class="label">Gateway</span>
-                                <span class="value" id="setupGatewayField">Wix Payments</span>
-                            </div>
-                            <div class="form-row">
-                                <span class="label">Webhook URL</span>
-                                <span class="value readonly">https://platform.apigateway.co/webhooks/payment</span>
-                            </div>
-                            <div class="form-row">
-                                <span class="label">API Key</span>
-                                <span class="value masked">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;</span>
-                            </div>
-                            <div class="connection-status-row">
-                                <span class="label" style="color:var(--text-muted)">Status</span>
-                                <div class="status-indicator">
-                                    <div class="status-dot pre-connected" id="connDot"></div>
-                                    <span id="connStatusText">Pre-Connected</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="connection-progress-msg" id="connProgressMsg"></div>
-                        <div class="connection-btn-area" id="connBtnArea"></div>
-                    </div>
-                </div>
-
-                <!-- Screen 1.3: Connection Verified -->
-                <div class="sim-screen" id="screen2">
-                    <div class="connection-verified">
-                        <h3>&#10003; Connection Verified</h3>
-
-                        <div class="verified-card">
-                            <div class="verified-row">
-                                <span class="label">Gateway</span>
-                                <span class="value" id="verifiedGateway">Wix Payments</span>
-                            </div>
-                            <div class="verified-row">
-                                <span class="label">Status</span>
-                                <span class="value ok">CONNECTED &#10003;</span>
-                            </div>
-                            <div class="verified-row">
-                                <span class="label">Webhook URL</span>
-                                <span class="value ok">configured &#10003;</span>
-                            </div>
-                            <div class="verified-row">
-                                <span class="label">OAuth Token</span>
-                                <span class="value ok">stored securely &#10003;</span>
-                            </div>
-                            <div class="verified-row">
-                                <span class="label">Connection Method</span>
-                                <span class="value">OAuth 2.0</span>
-                            </div>
-                        </div>
-
-                        <div class="status-flow">
-                            <div class="flow-step">Pre-Connected</div>
-                            <div class="flow-arrow">&rarr;</div>
-                            <div class="flow-step current">Connected</div>
-                            <div class="flow-arrow">&rarr;</div>
-                            <div class="flow-step">(Disconnected if token expires)</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ================================
-                     STAGE 2: AUTOMATION CONFIGURATION
-                     ================================ -->
-
-                <!-- Screen 2.1: Configure Automation Actions -->
-                <div class="sim-screen" id="screen3">
-                    <div class="automation-config">
-                        <h3>Configure Automation Actions</h3>
-                        <div class="sub">Wire the 3 reusable actions into the automation builder</div>
-
-                        <div class="auto-trigger" id="autoTrigger">
-                            &#9889; Trigger: Payment Webhook Received
-                        </div>
-
-                        <div class="auto-arrow" id="autoArrow0">&darr;</div>
-
-                        <div class="auto-action-card" id="autoAction1">
-                            <div class="action-header">
-                                <div class="action-num">1</div>
-                                <div class="action-title">Charge Order</div>
-                            </div>
-                            <div class="action-io">
-                                <span>Input: order_id (from webhook payload)</span>
-                            </div>
-                            <div class="action-io">
-                                <span>Output: order_id, success (boolean)</span>
-                            </div>
-                            <div class="action-desc">"Matches the payment to an existing order"</div>
-                        </div>
-
-                        <div class="auto-arrow" id="autoArrow1">&darr;</div>
-
-                        <div class="auto-action-card" id="autoAction2">
-                            <div class="action-header">
-                                <div class="action-num">2</div>
-                                <div class="action-title">Send Invoice</div>
-                            </div>
-                            <div class="action-io">
-                                <span>Input: namespace, invoice_id</span>
-                            </div>
-                            <div class="action-io">
-                                <span>Output: success (boolean)</span>
-                            </div>
-                            <div class="action-desc">"Generates invoice and emails to customer"</div>
-                        </div>
-
-                        <div class="auto-arrow" id="autoArrow2">&darr;</div>
-
-                        <div class="auto-action-card" id="autoAction3">
-                            <div class="action-header">
-                                <div class="action-num">3</div>
-                                <div class="action-title">Pay Invoice</div>
-                            </div>
-                            <div class="action-io">
-                                <span>Input: namespace, invoice_id</span>
-                            </div>
-                            <div class="action-io">
-                                <span>Output: invoice_id</span>
-                            </div>
-                            <div class="action-desc">"Marks invoice paid, triggers product activation"</div>
-                        </div>
-
-                        <div class="auto-reusable-note" id="autoNote">This is the same automation for ALL partners. No per-partner code.</div>
-
-                        <div class="auto-btn-area" id="autoBtnArea"></div>
-                    </div>
-                </div>
-
-                <!-- Screen 2.2: Automation Active -->
-                <div class="sim-screen" id="screen4">
-                    <div class="automation-active">
-                        <h3>&#10003; Automation Active</h3>
-
-                        <div class="active-card">
-                            <div class="active-row">
-                                <span class="label">Automation Status</span>
-                                <span class="value ok">ACTIVE &#10003;</span>
-                            </div>
-                            <div class="active-row">
-                                <span class="label">Trigger</span>
-                                <span class="value">Payment Webhook</span>
-                            </div>
-                            <div class="active-row">
-                                <span class="label">Actions</span>
-                                <span class="value">3 configured</span>
-                            </div>
-                            <div class="active-row">
-                                <span class="label">Partners using this</span>
-                                <span class="value">Partner A, Partner B, Partner C</span>
-                            </div>
-                        </div>
-
-                        <div class="active-ready-msg">Ready to process payments. Let's test with a real transaction.</div>
-                    </div>
-                </div>
-
-                <!-- ================================
-                     STAGE 3: LIVE PAYMENT FLOW
-                     ================================ -->
-
-                <!-- Screen 3.1: Customer Storefront -->
-                <div class="sim-screen" id="screen5">
-                    <div class="storefront">
-                        <div class="storefront-title">AI Product Catalog</div>
-                        <div class="storefront-sub">BrightSmile Dental -- Customer Storefront</div>
-
-                        <div class="product-item in-cart">
-                            <div class="product-info">
-                                <div class="product-icon" style="background:rgba(99,102,241,0.15);">&#128172;</div>
-                                <div>
-                                    <div class="product-name">AI Chat Receptionist <span class="cart-badge">IN CART</span></div>
-                                    <div class="product-desc">24/7 automated customer chat for your website</div>
-                                </div>
-                            </div>
-                            <div class="product-price">$79/mo</div>
-                        </div>
-
-                        <div class="product-item">
-                            <div class="product-info">
-                                <div class="product-icon" style="background:rgba(139,92,246,0.15);">&#128222;</div>
-                                <div>
-                                    <div class="product-name">AI Voice Receptionist</div>
-                                    <div class="product-desc">AI-powered phone answering and scheduling</div>
-                                </div>
-                            </div>
-                            <div class="product-price">$199/mo</div>
-                        </div>
-
-                        <div class="product-item">
-                            <div class="product-info">
-                                <div class="product-icon" style="background:rgba(34,197,94,0.15);">&#11088;</div>
-                                <div>
-                                    <div class="product-name">Reputation AI</div>
-                                    <div class="product-desc">Automated review management and responses</div>
-                                </div>
-                            </div>
-                            <div class="product-price">$99/mo</div>
-                        </div>
-
-                        <div class="cart-summary">
-                            <div>
-                                <div class="cart-total-label">Cart Total</div>
-                                <div class="cart-total-value">$79.00</div>
-                                <div class="cart-gateway-note">Payment via <span id="cartGateway">Wix Payments</span></div>
-                            </div>
-                            <button class="sim-btn green" onclick="goToScreen(6)">Pay Now &rarr;</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Screen 3.2: Payment Processing -->
-                <div class="sim-screen" id="screen6">
-                    <div class="payment-screen">
-                        <div class="payment-card">
-                            <div class="payment-gateway-label" id="payGatewayLabel">Wix Payments</div>
-                            <div class="payment-card-row">
-                                <span class="label">Card</span>
-                                <span class="value">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242</span>
-                            </div>
-                            <div class="payment-card-row">
-                                <span class="label">Amount</span>
-                                <span class="value">$79.00</span>
-                            </div>
-                            <div class="payment-card-row">
-                                <span class="label">Gateway</span>
-                                <span class="value" id="payGatewayRow">Wix Payments</span>
-                            </div>
-                        </div>
-
-                        <div id="paySpinner" class="payment-spinner"></div>
-                        <div id="payStatus" class="payment-status">Processing payment...</div>
-                        <div id="payWebhook" class="payment-webhook">Webhook firing to platform...</div>
-                    </div>
-                </div>
-
-                <!-- Screen 3.3: Automation Pipeline -->
-                <div class="sim-screen" id="screen7">
-                    <div class="pipeline-screen">
-                        <div class="pipeline-title">Automation Pipeline</div>
-                        <div class="pipeline-sub">behind the scenes -- real-time processing log</div>
-
-                        <div class="pipeline-log" id="pipelineLog">
-                            <div class="log-line" id="log0"><span class="log-time">[0:02]</span> <span class="log-check">&#10003;</span> <span class="log-label">Webhook received</span> <span class="log-detail">-- payment event captured from <span class="logGwName">Wix Payments</span></span></div>
-                            <div class="log-line" id="log1"><span class="log-time">[0:04]</span> <span class="log-check">&#10003;</span> <span class="log-label">Charge Order</span> <span class="log-detail">-- order matched (ORD-28471)</span></div>
-                            <div class="log-line" id="log2"><span class="log-time">[0:07]</span> <span class="log-check">&#10003;</span> <span class="log-label">Get Invoice Data</span> <span class="log-detail">-- invoice retrieved (INV-39182)</span></div>
-                            <div class="log-line" id="log3"><span class="log-time">[0:09]</span> <span class="log-check">&#10003;</span> <span class="log-label">Send Invoice</span> <span class="log-detail">-- invoice emailed to sarah@brightsmiledental.com</span></div>
-                            <div class="log-line" id="log4"><span class="log-time">[0:12]</span> <span class="log-check">&#10003;</span> <span class="log-label">Pay Invoice</span> <span class="log-detail">-- payment applied to invoice</span></div>
-                            <div class="log-line" id="log5"><span class="log-time">[0:15]</span> <span class="log-check">&#10003;</span> <span class="log-label">Create Sales Order &amp; Activate</span> <span class="log-detail">-- product activation triggered</span></div>
-                            <div class="log-line" id="log6"><span class="log-time">[0:18]</span> <span class="log-spin">&#8635;</span> <span class="log-label" style="color:var(--yellow)">Activating AI Chat Receptionist...</span></div>
-                            <div class="log-line" id="log7"><span class="log-time">[0:22]</span> <span class="log-check">&#10003;</span> <span class="log-label" style="color:var(--green);font-weight:700;">AI Chat Receptionist -- ACTIVE</span></div>
-                        </div>
-
-                        <div class="pipeline-actions">
-                            <div class="pipeline-action" id="pAction1">
-                                <div class="pipeline-action-name">Charge Order</div>
-                                <div class="pipeline-action-desc">Match order from webhook</div>
-                            </div>
-                            <div class="pipeline-arrow" id="pArrow1">&rarr;</div>
-                            <div class="pipeline-action" id="pAction2">
-                                <div class="pipeline-action-name">Send Invoice</div>
-                                <div class="pipeline-action-desc">Generate and deliver invoice</div>
-                            </div>
-                            <div class="pipeline-arrow" id="pArrow2">&rarr;</div>
-                            <div class="pipeline-action" id="pAction3">
-                                <div class="pipeline-action-name">Pay Invoice</div>
-                                <div class="pipeline-action-desc">Apply payment, activate product</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Screen 3.4: Customer Email -->
-                <div class="sim-screen" id="screen8">
-                    <div class="email-screen">
-                        <div class="email-mockup">
-                            <div class="email-toolbar">
-                                <div class="email-toolbar-dot" style="background:#ef4444"></div>
-                                <div class="email-toolbar-dot" style="background:#eab308"></div>
-                                <div class="email-toolbar-dot" style="background:#22c55e"></div>
-                            </div>
-                            <div class="email-header-area">
-                                <div class="email-field">
-                                    <span class="label">From:</span>
-                                    <span class="value">noreply@platform.com</span>
-                                </div>
-                                <div class="email-field">
-                                    <span class="label">To:</span>
-                                    <span class="value">sarah@brightsmiledental.com</span>
-                                </div>
-                                <div class="email-subject">Your AI Chat Receptionist is now active!</div>
-                            </div>
-                            <div class="email-body-area">
-                                <p>Hi Sarah,</p>
-                                <p>Your AI Chat Receptionist is live and ready to answer customer questions on your website 24/7.</p>
-                                <div class="email-invoice-table">
-                                    <div class="email-invoice-item">
-                                        <div class="label">Invoice</div>
-                                        <div class="value">INV-39182</div>
-                                    </div>
-                                    <div class="email-invoice-item">
-                                        <div class="label">Amount</div>
-                                        <div class="value">$79.00</div>
-                                    </div>
-                                    <div class="email-invoice-item">
-                                        <div class="label">Status</div>
-                                        <div class="value paid">Paid &#10003;</div>
-                                    </div>
-                                </div>
-                                <a href="#" class="email-cta" onclick="return false;">Open Your Dashboard &rarr;</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Screen 3.5: Product Live -->
-                <div class="sim-screen" id="screen9">
-                    <div class="live-screen">
-                        <div class="chat-widget-mockup">
-                            <div class="chat-header">
-                                <div class="chat-avatar">&#129302;</div>
-                                <div class="chat-header-text">
-                                    <div class="name">BrightSmile Dental Assistant</div>
-                                    <div class="status">&#9679; Online now</div>
-                                </div>
-                            </div>
-                            <div class="chat-messages">
-                                <div class="chat-bubble">
-                                    Hi! I'm your AI assistant for BrightSmile Dental. How can I help you today?
-                                </div>
-                            </div>
-                            <div class="chat-input-area">
-                                <div class="chat-input">Type your message...</div>
-                                <div class="chat-send">&#8593;</div>
-                            </div>
-                        </div>
-
-                        <div class="live-stats">
-                            <div class="live-stat">
-                                <div class="live-stat-value green">Just now</div>
-                                <div class="live-stat-label">Activated</div>
-                            </div>
-                            <div class="live-stat">
-                                <div class="live-stat-value accent">0:22</div>
-                                <div class="live-stat-label">Total Time</div>
-                            </div>
-                            <div class="live-stat">
-                                <div class="live-stat-value green">0</div>
-                                <div class="live-stat-label">Human Steps</div>
-                            </div>
-                        </div>
-
-                        <div class="live-gateway-note">Connected via: <strong id="liveGateway">Wix Payments</strong></div>
-
-                        <div class="live-message">"The customer paid and the product was live before they closed the browser tab."</div>
-
-                        <button class="sim-btn" onclick="resetSimulation()">Run Again &#8635;</button>
-                    </div>
-                </div>
-
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- ========================================
-     PART 3: REFERENCE SECTIONS
-     ======================================== -->
-
-<!-- Before / After -->
-<section class="section">
-    <div class="container">
-        <div class="section-label">The Problem vs The Solution</div>
-        <div class="section-title">Before &amp; After</div>
-        <div class="section-desc">Every partner using a third-party payment system had a completely manual handoff. This infrastructure eliminated every human step.</div>
-
-        <div class="comparison">
-            <div class="comparison-card before">
-                <h3>Before</h3>
-                <div class="subtitle">6 manual steps, 2 systems, human bottleneck</div>
-                <ul class="step-list">
-                    <li><span class="step-num">1</span> Customer pays through partner's payment system <span class="step-time">0 min</span></li>
-                    <li><span class="step-num">2</span> Operator manually creates order in the platform <span class="step-time">~15 min</span></li>
-                    <li><span class="step-num">3</span> Operator manually matches the invoice <span class="step-time">~10 min</span></li>
-                    <li><span class="step-num">4</span> Operator manually marks invoice as paid <span class="step-time">~5 min</span></li>
-                    <li><span class="step-num">5</span> Operator manually activates products <span class="step-time">~10 min</span></li>
-                    <li><span class="step-num">6</span> Operator confirms back to customer <span class="step-time">~5 min</span></li>
-                </ul>
-                <div class="comparison-footer">
-                    <div>
-                        <div class="total-time">Up to 24 hours</div>
-                        <div class="total-label">Including queue wait time</div>
-                    </div>
-                    <div style="text-align:right">
-                        <div style="font-size:24px;color:var(--red)">6</div>
-                        <div class="total-label">Manual steps</div>
+    <!-- ============================================
+         BEFORE / AFTER
+         ============================================ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Before &amp; After</h2>
+            <p class="section-subtitle">Manual handoffs replaced with automated infrastructure</p>
+            <div class="ba-grid">
+                <div class="ba-card before">
+                    <div class="ba-header red">BEFORE</div>
+                    <div class="ba-big">6 manual steps</div>
+                    <div class="ba-detail">Up to 24 hours end-to-end</div>
+                    <div class="ba-steps">
+                        <div class="ba-step"><span class="ba-step-icon">1.</span> Partner submits payment gateway credentials</div>
+                        <div class="ba-step"><span class="ba-step-icon">2.</span> Ops team verifies credentials manually</div>
+                        <div class="ba-step"><span class="ba-step-icon">3.</span> Engineer configures webhook routing</div>
+                        <div class="ba-step"><span class="ba-step-icon">4.</span> QA tests payment flow in staging</div>
+                        <div class="ba-step"><span class="ba-step-icon">5.</span> Invoice generated and sent manually</div>
+                        <div class="ba-step"><span class="ba-step-icon">6.</span> Product activated after payment confirmed</div>
                     </div>
                 </div>
-            </div>
-
-            <div class="comparison-card after">
-                <h3>After</h3>
-                <div class="subtitle">Webhook to activation, zero human intervention</div>
-                <ul class="step-list">
-                    <li><span class="step-num">&#10003;</span> Customer pays through partner's payment system <span class="step-time">0 min</span></li>
-                    <li><span class="step-num">&#10003;</span> Payment webhook fires automatically to the platform <span class="step-time">~2 sec</span></li>
-                    <li><span class="step-num">&#10003;</span> Invoice auto-matched and marked paid <span class="step-time">~10 sec</span></li>
-                    <li><span class="step-num">&#10003;</span> Products activated automatically <span class="step-time">~30 sec</span></li>
-                </ul>
-                <div class="comparison-footer">
-                    <div>
-                        <div class="total-time">Under 5 minutes</div>
-                        <div class="total-label">End to end, fully automated</div>
-                    </div>
-                    <div style="text-align:right">
-                        <div style="font-size:24px;color:var(--green)">0</div>
-                        <div class="total-label">Manual steps</div>
+                <div class="ba-card after">
+                    <div class="ba-header green">AFTER (DESIGNED)</div>
+                    <div class="ba-big">0 manual steps</div>
+                    <div class="ba-detail">Under 5 minutes — automated end-to-end</div>
+                    <div class="ba-steps">
+                        <div class="ba-step"><span class="ba-step-icon">&#10003;</span> OAuth connection — self-service, verified automatically</div>
+                        <div class="ba-step"><span class="ba-step-icon">&#10003;</span> Webhook routing — pre-configured, no per-partner code</div>
+                        <div class="ba-step"><span class="ba-step-icon">&#10003;</span> Payment → invoice → activation — single automated pipeline</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Partner Cards -->
-<section class="section">
-    <div class="container">
-        <div class="section-label">Partner Implementations</div>
-        <div class="section-title">3 Partners, 3 Continents, 1 Architecture</div>
-        <div class="section-desc">Every new payment partner plugs into the same 3 automation actions. Zero per-partner code.</div>
-
-        <div class="partner-grid">
-            <div class="partner-card">
-                <div class="partner-header">
+    <!-- ============================================
+         PARTNER IMPLEMENTATIONS
+         ============================================ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Partner Implementations</h2>
+            <p class="section-subtitle">Real partners, honest status — infrastructure built for scale</p>
+            <div class="partner-grid">
+                <div class="partner-card">
                     <div class="partner-flag">&#127482;&#127480;</div>
-                    <div>
-                        <div class="partner-name">Partner A</div>
-                        <div class="partner-sub">US E-Commerce Platform</div>
+                    <div class="partner-name">Zoek</div>
+                    <div class="partner-gateway">Wix Payments</div>
+                    <div class="partner-stats">
+                        10,000+ SMBs<br>
+                        200+ daily leads<br>
+                        US e-commerce vertical
                     </div>
+                    <span class="partner-status delivered">First implementation — automation actions delivered</span>
                 </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">Payment Gateway</span>
-                    <span class="partner-detail-value">Wix Payments</span>
-                </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">SMBs Served</span>
-                    <span class="partner-detail-value">10,000+</span>
-                </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">Daily Lead Volume</span>
-                    <span class="partner-detail-value">200+</span>
-                </div>
-                <span class="partner-status status-live">LIVE</span>
-            </div>
-
-            <div class="partner-card">
-                <div class="partner-header">
+                <div class="partner-card">
                     <div class="partner-flag">&#127487;&#127462;</div>
-                    <div>
-                        <div class="partner-name">Partner B</div>
-                        <div class="partner-sub">South Africa Directory Platform</div>
+                    <div class="partner-name">Telkom</div>
+                    <div class="partner-gateway">PayFast</div>
+                    <div class="partner-stats">
+                        500,000+ subscribers<br>
+                        19 directories<br>
+                        20M+ users across South Africa
                     </div>
+                    <span class="partner-status pipeline">Requested — in pipeline</span>
                 </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">Payment Gateway</span>
-                    <span class="partner-detail-value">PayFast</span>
-                </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">Subscribers</span>
-                    <span class="partner-detail-value">500,000+</span>
-                </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">Regional Directories</span>
-                    <span class="partner-detail-value">19</span>
-                </div>
-                <span class="partner-status status-requested">REQUESTED</span>
-            </div>
-
-            <div class="partner-card">
-                <div class="partner-header">
-                    <div class="partner-flag">&#127466;&#127482;</div>
-                    <div>
-                        <div class="partner-name">Partner C</div>
-                        <div class="partner-sub">European Media Company</div>
+                <div class="partner-card">
+                    <div class="partner-flag">&#127470;&#127481;</div>
+                    <div class="partner-name">Italia Online</div>
+                    <div class="partner-gateway">Stripe Connect (Standard)</div>
+                    <div class="partner-stats">
+                        130,000 advertisers<br>
+                        700+ sales agents<br>
+                        40,000 websites across Italy
                     </div>
+                    <span class="partner-status next">Stripe billing active — BYOPG automation next</span>
                 </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">Payment Gateway</span>
-                    <span class="partner-detail-value">Stripe Connect (Standard)</span>
-                </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">SMB Advertisers</span>
-                    <span class="partner-detail-value">130,000</span>
-                </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">Sales Agents</span>
-                    <span class="partner-detail-value">700+</span>
-                </div>
-                <span class="partner-status status-active">ACTIVE</span>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Impact Metrics -->
-<section class="section">
-    <div class="container">
-        <div class="section-label">Business Impact</div>
-        <div class="section-title">Measurable Results</div>
-
-        <div class="impact-grid">
-            <div class="impact-card">
-                <div class="impact-value" style="color:var(--green)">80%+</div>
-                <div class="impact-label">Month-12 retention when first value delivered in 14 days</div>
-                <div class="impact-benchmark">Amplitude 2025 Benchmark</div>
-            </div>
-            <div class="impact-card">
-                <div class="impact-value" style="color:var(--red)">35-50%</div>
-                <div class="impact-label">Month-12 retention without early value delivery</div>
-                <div class="impact-benchmark">Amplitude 2025 Benchmark</div>
-            </div>
-            <div class="impact-card">
-                <div class="impact-value" style="color:var(--accent-light)">3</div>
-                <div class="impact-label">Reusable automation actions powering all partners</div>
-                <div class="impact-benchmark">Charge Order + Send Invoice + Pay Invoice</div>
-            </div>
-            <div class="impact-card">
-                <div class="impact-value" style="color:var(--yellow)">0</div>
-                <div class="impact-label">Per-partner custom code required for new integrations</div>
-                <div class="impact-benchmark">Plug into existing actions</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Connection Lifecycle -->
-<section class="section">
-    <div class="container">
-        <div class="section-label">Connection Management</div>
-        <div class="section-title">Connection Lifecycle</div>
-        <div class="section-desc">How the platform manages payment gateway connections throughout their lifecycle.</div>
-
-        <div class="lifecycle-container">
-            <div class="lifecycle-flow">
-                <div class="lifecycle-node pre">Pre-Connected</div>
-                <div class="lifecycle-arrow">&rarr;</div>
-                <div class="lifecycle-node connected">Connected</div>
-                <div class="lifecycle-arrow">&rarr;</div>
-                <div class="lifecycle-node disconnected">Disconnected</div>
-                <div class="lifecycle-arrow">&rarr;</div>
-                <div class="lifecycle-node connected">Reconnect</div>
-            </div>
-
-            <div style="text-align:center;margin-top:16px;">
-                <div class="lifecycle-flow" style="margin:0;justify-content:center;">
-                    <div class="lifecycle-node connected" style="min-width:auto;padding:10px 16px;font-size:13px;">Connected</div>
-                    <div class="lifecycle-arrow">&rarr;</div>
-                    <div class="lifecycle-node deleted">Deleted</div>
+    <!-- ============================================
+         PROJECTED IMPACT
+         ============================================ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Projected Impact</h2>
+            <p class="section-subtitle">Honest, forward-looking projections grounded in industry benchmarks</p>
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <div class="impact-icon">&#128200;</div>
+                    <div class="impact-text">15-25% projected adoption among new SMB activations in the first quarter post-launch, growing to 40-60% within 6 months</div>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon">&#9201;</div>
+                    <div class="impact-text">Designed against industry benchmark: first value in 14 days = higher retention (Amplitude 2025)</div>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon">&#9881;</div>
+                    <div class="impact-text">3 reusable automation actions — same flow for all current and future payment partners</div>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon">&#128640;</div>
+                    <div class="impact-text">0 per-partner custom code — next gateway integration takes hours to configure, not weeks to build</div>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <div class="lifecycle-note">
-                OAuth tokens expire (~60 days for some gateways). The platform detects expiry and prompts the partner to reconnect.<br>
-                No payment data is lost during disconnection -- transactions queue until the connection is restored.
+    <!-- ============================================
+         CONNECTION LIFECYCLE
+         ============================================ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Connection Lifecycle</h2>
+            <p class="section-subtitle">OAuth token management with automatic expiry detection</p>
+            <div class="lifecycle-section">
+                <div class="lifecycle-flow">
+                    <div class="lifecycle-node">Pre-Connected</div>
+                    <span class="lifecycle-arrow">&#8594;</span>
+                    <div class="lifecycle-node active-node">Connected</div>
+                    <span class="lifecycle-arrow">&#8594;</span>
+                    <div class="lifecycle-node">Disconnected (token expired)</div>
+                    <span class="lifecycle-arrow">&#8594;</span>
+                    <div class="lifecycle-node">Reconnect</div>
+                </div>
+                <p class="lifecycle-note">OAuth tokens expire periodically. The platform detects expiry and prompts reconnection. No payment data is lost during disconnected states — transactions queue until the connection is restored.</p>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Architecture -->
-<section class="section">
-    <div class="container">
-        <div class="section-label">Architecture</div>
-        <div class="section-title">The 3 Automation Actions</div>
-        <div class="section-desc">Every implementation uses the same 3 actions. Reusable across all gateways.</div>
-
-        <div class="arch-container">
+    <!-- ============================================
+         ARCHITECTURE
+         ============================================ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Architecture</h2>
+            <p class="section-subtitle">End-to-end payment flow from gateway to product activation</p>
             <div class="arch-flow">
-                <div class="arch-block">
-                    <h4>Partner Payment Gateway</h4>
-                    <p>Wix Payments<br>PayFast<br>Stripe Connect<br>(any webhook-capable gateway)</p>
-                </div>
-                <div class="arch-arrow-h">&rarr;</div>
-                <div class="arch-block">
-                    <h4>Webhook</h4>
-                    <p>Payment event received and validated by the platform</p>
-                </div>
-                <div class="arch-arrow-h">&rarr;</div>
-                <div class="arch-block" style="border-color:var(--accent)">
-                    <h4>Charge Order</h4>
-                    <p>Creates or matches the order from webhook payload</p>
-                </div>
-                <div class="arch-arrow-h">&rarr;</div>
-                <div class="arch-block" style="border-color:var(--accent)">
-                    <h4>Send Invoice</h4>
-                    <p>Generates and sends invoice to the customer</p>
-                </div>
-                <div class="arch-arrow-h">&rarr;</div>
-                <div class="arch-block" style="border-color:var(--accent)">
-                    <h4>Pay Invoice</h4>
-                    <p>Marks invoice paid, triggers product activation</p>
-                </div>
-                <div class="arch-arrow-h">&rarr;</div>
-                <div class="arch-block" style="border-color:var(--green)">
-                    <h4>Products Live</h4>
-                    <p>AI Chat, Voice, Reputation -- active in under 5 minutes</p>
-                </div>
-            </div>
-            <div class="arch-note">
-                The same 3 actions power Partner A (Wix Payments), Partner B (PayFast), and Partner C (Stripe Connect).<br>
-                The next payment partner takes hours to configure, not weeks to build.
+                <div class="arch-node">Partner Payment Gateway</div>
+                <span class="arch-arrow">&#8594;</span>
+                <div class="arch-node highlight-node">Webhook</div>
+                <span class="arch-arrow">&#8594;</span>
+                <div class="arch-node">Charge Order</div>
+                <span class="arch-arrow">&#8594;</span>
+                <div class="arch-node">Send Invoice</div>
+                <span class="arch-arrow">&#8594;</span>
+                <div class="arch-node">Pay Invoice</div>
+                <span class="arch-arrow">&#8594;</span>
+                <div class="arch-node highlight-node">Products Live</div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- PM Work -->
-<section class="section">
-    <div class="container">
-        <div class="section-label">Product Manager Work</div>
-        <div class="section-title">What I Did</div>
-        <div class="section-desc">The PM thinking behind this infrastructure.</div>
-
-        <div class="pm-grid">
-            <div class="pm-card">
-                <h4>Problem Identification</h4>
-                <p>Identified that every partner using a third-party payment system had the same 6-step manual bottleneck. The pattern repeated across Partner A, Partner B, and Partner C -- each with different payment gateways but the same activation delay.</p>
-            </div>
-            <div class="pm-card">
-                <h4>Requirements Design</h4>
-                <p>Designed the 3-action automation architecture (Charge Order, Send Invoice, Pay Invoice) that works with any webhook-capable payment gateway. Wrote acceptance criteria covering happy path, partial failures, duplicate webhooks, and retry logic.</p>
-            </div>
-            <div class="pm-card">
-                <h4>Reusability Principle</h4>
-                <p>Insisted on reusable infrastructure over partner-specific solutions. The first implementation (Partner A / Wix Payments) took engineering effort. The second (Partner B / PayFast) and third (Partner C / Stripe Connect) plug into the same 3 actions with configuration only.</p>
-            </div>
-            <div class="pm-card">
-                <h4>Market Validation</h4>
-                <p>Benchmarked against Amplitude 2025 data: customers reaching first value within 14 days retain at 80%+. This system compressed time-to-first-value from days to minutes -- closing the activation gap that drives early churn.</p>
-            </div>
-            <div class="pm-card">
-                <h4>Cross-Partner Scaling</h4>
-                <p>Validated with 3 partners across 3 continents (US, South Africa, Europe) -- each with different payment systems, currencies, tax requirements, and billing models. The architecture handles all of them without per-partner code.</p>
-            </div>
-            <div class="pm-card">
-                <h4>Platform Impact</h4>
-                <p>This infrastructure does not just serve payment partners. The same webhook-to-activation pattern powers AI product deployment -- when a partner's customer pays, their AI Chat Receptionist, AI Voice, or Reputation AI activates automatically. Payment infrastructure becomes AI distribution infrastructure.</p>
+    <!-- ============================================
+         PM WORK
+         ============================================ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Product Management Work</h2>
+            <p class="section-subtitle">What it took to design and deliver this infrastructure</p>
+            <div class="pm-grid">
+                <div class="pm-card">
+                    <div class="pm-card-icon">&#128269;</div>
+                    <div class="pm-card-title">Problem Identification</div>
+                    <div class="pm-card-desc">Mapped the 6-step manual payment onboarding process, identified bottlenecks through partner support ticket analysis, and quantified the cost of each manual handoff.</div>
+                </div>
+                <div class="pm-card">
+                    <div class="pm-card-icon">&#128221;</div>
+                    <div class="pm-card-title">Requirements Design</div>
+                    <div class="pm-card-desc">Authored the Mission Brief with evidence-based objectives, exhaustive acceptance criteria (GIVEN/WHEN/THEN), and explicit failure signals for every success metric.</div>
+                </div>
+                <div class="pm-card">
+                    <div class="pm-card-icon">&#128260;</div>
+                    <div class="pm-card-title">Reusability Principle</div>
+                    <div class="pm-card-desc">Designed 3 automation actions that work identically across all payment gateways — no per-partner custom code, no per-partner maintenance burden.</div>
+                </div>
+                <div class="pm-card">
+                    <div class="pm-card-icon">&#128202;</div>
+                    <div class="pm-card-title">Market Benchmarking</div>
+                    <div class="pm-card-desc">Benchmarked against Stripe (first API call in 30 min), Twilio (self-service onboarding), and Amplitude retention data to set measurable outcome targets.</div>
+                </div>
+                <div class="pm-card">
+                    <div class="pm-card-icon">&#127757;</div>
+                    <div class="pm-card-title">Cross-Partner Scaling</div>
+                    <div class="pm-card-desc">Coordinated across 3 partners in 3 countries (US, South Africa, Italy) with different payment ecosystems, currencies, and compliance requirements.</div>
+                </div>
+                <div class="pm-card">
+                    <div class="pm-card-icon">&#9889;</div>
+                    <div class="pm-card-title">Platform Impact</div>
+                    <div class="pm-card-desc">Designed infrastructure that addresses 650K+ SMBs, reduces per-activation cost to near-zero, and creates a repeatable pattern for every future partner integration.</div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Footer -->
-<div class="footer">
-    <div class="container">
-        <p><strong>Designed by Sangeetha K</strong> -- Product Manager</p>
-        <p style="margin-top:8px">
-            <a href="https://github.com/Sangythek190" target="_blank">GitHub</a> &middot;
-            <a href="https://linkedin.com/in/SangeethaK" target="_blank">LinkedIn</a> &middot;
-            <a href="https://github.com/Sangythek190/ai-data-analyst-portfolio" target="_blank">AI Data Analyst Demo</a> &middot;
-            <a href="https://github.com/Sangythek190/churn-framework" target="_blank">Churn Framework</a> &middot;
-            <a href="https://github.com/Sangythek190/ai-safety-guardrails" target="_blank">AI Safety Guardrails</a>
-        </p>
-        <p style="margin-top:16px;font-size:11px;color:#555">Infrastructure serving 650,000+ addressable SMBs across 3 enterprise partner ecosystems spanning 3 continents</p>
-    </div>
-</div>
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-name">Sangeetha K</div>
+            <div class="footer-role">Product Owner &amp; Manager</div>
+            <div class="footer-links">
+                <a href="https://github.com/skrishnamoorthy" class="footer-link" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://linkedin.com/in/sangeetha-krishnamoorthy" class="footer-link" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="../index.html" class="footer-link">All Portfolio Projects</a>
+            </div>
+        </div>
+    </footer>
 
-<script>
-(function() {
-    // ========================================
-    // STATE
-    // ========================================
-    var TOTAL_SCREENS = 10; // screens 0-9
-    var currentScreen = 0;
-    var timerInterval = null;
-    var elapsedMs = 0;
-    var autoAdvanceTimeout = null;
-    var selectedGateway = 'wix';
+    <!-- ============================================
+         SIMULATION ENGINE
+         ============================================ -->
+    <script>
+    (function() {
+        'use strict';
 
-    var gatewayNames = {
-        wix: 'Wix Payments',
-        payfast: 'PayFast',
-        stripe: 'Stripe Connect'
-    };
+        // State
+        let currentScreen = 0;
+        let selectedGateway = null;
+        const gateways = {
+            wix: { name: 'Wix Payments', partner: 'Zoek', short: 'Wix' },
+            payfast: { name: 'PayFast', partner: 'Telkom', short: 'PayFast' },
+            stripe: { name: 'Stripe Connect (Standard)', partner: 'Italia Online', short: 'Stripe' }
+        };
 
-    var screenLabels = [
-        '1.1 -- Choose Your Payment Gateway',
-        '1.2 -- Platform Connection Setup',
-        '1.3 -- Connection Verified',
-        '2.1 -- Configure Automation Actions',
-        '2.2 -- Automation Active',
-        '3.1 -- Customer Storefront',
-        '3.2 -- Payment Processing',
-        '3.3 -- Automation Pipeline',
-        '3.4 -- Customer Email',
-        '3.5 -- Product Live'
-    ];
+        const stageMap = [
+            { stage: 1, label: 'Stage 1: Partner Onboarding' },
+            { stage: 1, label: 'Stage 1: Partner Onboarding' },
+            { stage: 1, label: 'Stage 1: Partner Onboarding' },
+            { stage: 2, label: 'Stage 2: Automation Configuration' },
+            { stage: 2, label: 'Stage 2: Automation Configuration' },
+            { stage: 3, label: 'Stage 3: Live Payment Flow' },
+            { stage: 3, label: 'Stage 3: Live Payment Flow' },
+            { stage: 3, label: 'Stage 3: Live Payment Flow' },
+            { stage: 3, label: 'Stage 3: Live Payment Flow' },
+            { stage: 3, label: 'Stage 3: Live Payment Flow' }
+        ];
 
-    // Stage mapping: which screens belong to which stage (0-indexed)
-    var screenStage = [1, 1, 1, 2, 2, 3, 3, 3, 3, 3];
+        const body = document.getElementById('sim-body');
+        const progressEl = document.getElementById('sim-progress');
+        const stageLabel = document.getElementById('stage-label');
 
-    // ========================================
-    // GATEWAY SELECTION
-    // ========================================
-    window.selectGateway = function(gw) {
-        selectedGateway = gw;
-        var cards = document.querySelectorAll('.gateway-card');
-        cards.forEach(function(c) { c.classList.remove('selected'); });
-        document.getElementById('gw-' + gw).classList.add('selected');
-    };
+        function gw() { return gateways[selectedGateway] || gateways.wix; }
 
-    function applyGatewayToUI() {
-        var name = gatewayNames[selectedGateway];
-        // Setup screen
-        document.getElementById('setupGatewayName').textContent = name;
-        document.getElementById('setupGatewayField').textContent = name;
-        // Verified screen
-        document.getElementById('verifiedGateway').textContent = name;
-        // Storefront
-        document.getElementById('cartGateway').textContent = name;
-        // Payment processing
-        document.getElementById('payGatewayLabel').textContent = name;
-        document.getElementById('payGatewayRow').textContent = name;
-        // Pipeline log
-        var logGwSpans = document.querySelectorAll('.logGwName');
-        logGwSpans.forEach(function(s) { s.textContent = name; });
-        // Live screen
-        document.getElementById('liveGateway').textContent = name;
-    }
+        function updateHeader() {
+            const info = stageMap[currentScreen];
+            stageLabel.textContent = info.label;
+            progressEl.textContent = 'Screen ' + (currentScreen + 1) + ' of 10';
 
-    // ========================================
-    // TIMER
-    // ========================================
-    function startTimer() {
-        if (timerInterval) return;
-        elapsedMs = 0;
-        timerInterval = setInterval(function() {
-            elapsedMs += 100;
-            updateTimerDisplay();
-        }, 100);
-    }
-
-    function stopTimer() {
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-    }
-
-    function updateTimerDisplay() {
-        var totalSec = Math.floor(elapsedMs / 1000);
-        var min = Math.floor(totalSec / 60);
-        var sec = totalSec % 60;
-        var el = document.getElementById('simTimer');
-        el.textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
-    }
-
-    // ========================================
-    // SCREEN NAVIGATION
-    // ========================================
-    function showScreen(n) {
-        // Clear any pending auto-advance
-        if (autoAdvanceTimeout) {
-            clearTimeout(autoAdvanceTimeout);
-            autoAdvanceTimeout = null;
-        }
-
-        for (var i = 0; i < TOTAL_SCREENS; i++) {
-            document.getElementById('screen' + i).classList.remove('active');
-        }
-        document.getElementById('screen' + n).classList.add('active');
-
-        // Update dots
-        for (var i = 0; i < TOTAL_SCREENS; i++) {
-            var dot = document.getElementById('dot' + i);
-            dot.classList.remove('active', 'completed');
-            if (i < n) {
-                dot.classList.add('completed');
-            } else if (i === n) {
-                dot.classList.add('active');
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById('dot-' + i);
+                dot.className = 'sim-stage-dot';
+                if (i < info.stage) dot.classList.add('completed');
+                else if (i === info.stage) dot.classList.add('active');
             }
         }
 
-        // Update label
-        document.getElementById('simLabel').textContent = screenLabels[n];
-
-        // Update stage pills
-        var currentStg = screenStage[n];
-        for (var s = 1; s <= 3; s++) {
-            var pill = document.getElementById('stage' + s + 'pill');
-            pill.classList.remove('active', 'completed');
-            if (s < currentStg) {
-                pill.classList.add('completed');
-            } else if (s === currentStg) {
-                pill.classList.add('active');
-            }
+        function render(html) {
+            body.innerHTML = html;
+            body.style.opacity = '0';
+            requestAnimationFrame(function() {
+                body.style.transition = 'opacity 0.4s';
+                body.style.opacity = '1';
+            });
+            updateHeader();
         }
 
-        currentScreen = n;
-    }
+        // ===== SCREEN RENDERERS =====
 
-    // ========================================
-    // MAIN NAVIGATION (called by buttons)
-    // ========================================
-    window.goToScreen = function(n) {
-        applyGatewayToUI();
-
-        // Start timer on first transition past gateway selection
-        if (n === 1 && !timerInterval) {
-            startTimer();
+        function screen1_1() {
+            render(
+                '<div class="screen-content">' +
+                '<div class="sim-screen-title">Choose Your Payment Gateway</div>' +
+                '<div class="gateway-grid">' +
+                    '<div class="gateway-card" data-gw="wix" onclick="window.__simSelectGW(\'wix\')">' +
+                        '<div class="gateway-icon">&#128179;</div>' +
+                        '<div class="gateway-name">Wix Payments</div>' +
+                        '<div class="gateway-desc">For Zoek (US e-commerce, 10,000+ SMBs, 200+ daily leads)</div>' +
+                    '</div>' +
+                    '<div class="gateway-card" data-gw="payfast" onclick="window.__simSelectGW(\'payfast\')">' +
+                        '<div class="gateway-icon">&#127462;</div>' +
+                        '<div class="gateway-name">PayFast</div>' +
+                        '<div class="gateway-desc">For Telkom (South Africa, 500,000+ subscribers, 19 directories)</div>' +
+                    '</div>' +
+                    '<div class="gateway-card" data-gw="stripe" onclick="window.__simSelectGW(\'stripe\')">' +
+                        '<div class="gateway-icon">&#9889;</div>' +
+                        '<div class="gateway-name">Stripe Connect (Standard)</div>' +
+                        '<div class="gateway-desc">For Italia Online (Italy, 130,000 advertisers, 700+ sales agents)</div>' +
+                    '</div>' +
+                '</div>' +
+                '<button class="sim-btn" id="btn-connect" disabled onclick="window.__simNext()">Connect Gateway &#8594;</button>' +
+                '</div>'
+            );
         }
 
-        showScreen(n);
+        window.__simSelectGW = function(key) {
+            selectedGateway = key;
+            var cards = document.querySelectorAll('.gateway-card');
+            cards.forEach(function(c) { c.classList.remove('selected'); });
+            document.querySelector('[data-gw="' + key + '"]').classList.add('selected');
+            document.getElementById('btn-connect').disabled = false;
+        };
 
-        // Trigger screen-specific behaviors
-        if (n === 1) runConnectionSetup();
-        else if (n === 3) runAutomationConfig();
-        else if (n === 6) runPaymentScreen();
-    };
+        function screen1_2() {
+            render(
+                '<div class="screen-content purple-tint">' +
+                '<div class="action-label label-system">&#9881;&#65039; SYSTEM ACTION</div>' +
+                '<div class="sim-screen-title">Platform Connection Setup</div>' +
+                '<div class="conn-form">' +
+                    '<div class="conn-row"><span class="conn-label">Connection Method</span><span class="conn-value">OAuth 2.0</span></div>' +
+                    '<div class="conn-row"><span class="conn-label">Gateway</span><span class="conn-value">' + gw().name + '</span></div>' +
+                    '<div class="conn-row"><span class="conn-label">Webhook URL</span><span class="conn-value" style="font-size:11px;word-break:break-all;">https://platform.apigateway.co/webhooks/payment</span></div>' +
+                    '<div class="conn-row"><span class="conn-label">API Key</span><span class="conn-value masked">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;</span></div>' +
+                    '<div class="conn-row"><span class="conn-label">Status</span><span class="conn-status pending" id="conn-stat">&#9675; Pre-Connected</span></div>' +
+                '</div>' +
+                '<div class="conn-testing" id="conn-testing">Testing connection...</div>' +
+                '<button class="sim-btn" id="btn-configure" style="display:none;opacity:0;" onclick="window.__simNext()">Configure Automation &#8594;</button>' +
+                '</div>'
+            );
 
-    // ========================================
-    // SCREEN 1.2: Connection Setup
-    // ========================================
-    function runConnectionSetup() {
-        var dot = document.getElementById('connDot');
-        var statusText = document.getElementById('connStatusText');
-        var progressMsg = document.getElementById('connProgressMsg');
-        var btnArea = document.getElementById('connBtnArea');
-
-        dot.className = 'status-dot pre-connected';
-        statusText.textContent = 'Pre-Connected';
-        progressMsg.textContent = 'Configuring webhook endpoint...';
-        btnArea.innerHTML = '';
-
-        // 2s: Testing
-        setTimeout(function() {
-            progressMsg.textContent = 'Testing connection...';
-        }, 2000);
-
-        // 4s: Connected
-        setTimeout(function() {
-            dot.className = 'status-dot connected';
-            statusText.textContent = 'Connected';
-            statusText.style.color = 'var(--green)';
-            progressMsg.innerHTML = '&#10003; Connection established successfully';
-            progressMsg.style.color = 'var(--green)';
-
-            // Show button
-            btnArea.innerHTML = '<button class="sim-btn" onclick="goToScreen(2)">Configure Automation &rarr;</button>';
-        }, 4000);
-    }
-
-    // ========================================
-    // SCREEN 1.3: Connection Verified (auto-advance)
-    // ========================================
-    // Override goToScreen for screen 2 to auto-advance
-    var origGoToScreen = window.goToScreen;
-    window.goToScreen = function(n) {
-        origGoToScreen(n);
-
-        // Auto-advance from connection verified (screen 2) after 3s
-        if (n === 2) {
-            autoAdvanceTimeout = setTimeout(function() {
-                showScreen(3);
-                runAutomationConfig();
-            }, 3000);
-        }
-
-        // Auto-advance from storefront needs pay now click (screen 5) -- no auto
-        // Auto-advance from automation active (screen 4) after 3s
-        if (n === 4) {
-            // no-op, handled in runAutomationConfig flow
-        }
-    };
-
-    // ========================================
-    // SCREEN 2.1: Automation Configuration
-    // ========================================
-    function runAutomationConfig() {
-        var trigger = document.getElementById('autoTrigger');
-        var arrows = [document.getElementById('autoArrow0'), document.getElementById('autoArrow1'), document.getElementById('autoArrow2')];
-        var actions = [document.getElementById('autoAction1'), document.getElementById('autoAction2'), document.getElementById('autoAction3')];
-        var note = document.getElementById('autoNote');
-        var btnArea = document.getElementById('autoBtnArea');
-
-        // Reset
-        trigger.classList.remove('visible');
-        arrows.forEach(function(a) { a.classList.remove('visible'); });
-        actions.forEach(function(a) { a.classList.remove('visible'); });
-        note.classList.remove('visible');
-        btnArea.innerHTML = '';
-
-        // Show trigger
-        setTimeout(function() { trigger.classList.add('visible'); }, 300);
-
-        // Show action 1 at 1.5s
-        setTimeout(function() {
-            arrows[0].classList.add('visible');
-            actions[0].classList.add('visible');
-        }, 1500);
-
-        // Show action 2 at 3s
-        setTimeout(function() {
-            arrows[1].classList.add('visible');
-            actions[1].classList.add('visible');
-        }, 3000);
-
-        // Show action 3 at 4.5s
-        setTimeout(function() {
-            arrows[2].classList.add('visible');
-            actions[2].classList.add('visible');
-        }, 4500);
-
-        // Show note at 5.5s
-        setTimeout(function() {
-            note.classList.add('visible');
-        }, 5500);
-
-        // Show button at 6s
-        setTimeout(function() {
-            btnArea.innerHTML = '<button class="sim-btn green" onclick="activateAutomation()">Activate &amp; Test &rarr;</button>';
-        }, 6000);
-    }
-
-    window.activateAutomation = function() {
-        showScreen(4);
-        // Auto-advance from automation active after 3s
-        autoAdvanceTimeout = setTimeout(function() {
-            showScreen(5);
-        }, 3000);
-    };
-
-    // ========================================
-    // SCREEN 3.2: Payment Processing
-    // ========================================
-    function runPaymentScreen() {
-        var spinner = document.getElementById('paySpinner');
-        var status = document.getElementById('payStatus');
-        var webhook = document.getElementById('payWebhook');
-
-        spinner.style.display = 'block';
-        status.textContent = 'Processing payment...';
-        status.classList.remove('success');
-        webhook.classList.remove('show');
-
-        // 3s: Payment Accepted
-        setTimeout(function() {
-            spinner.style.display = 'none';
-            status.innerHTML = '&#10003; Payment Accepted';
-            status.classList.add('success');
-        }, 3000);
-
-        // 4.5s: Webhook message
-        setTimeout(function() {
-            webhook.classList.add('show');
-        }, 4500);
-
-        // 6s: Auto-advance to pipeline
-        autoAdvanceTimeout = setTimeout(function() {
-            showScreen(7);
-            runPipelineScreen();
-        }, 6000);
-    }
-
-    // ========================================
-    // SCREEN 3.3: Automation Pipeline
-    // ========================================
-    function runPipelineScreen() {
-        var logLines = [];
-        for (var i = 0; i <= 7; i++) {
-            logLines.push(document.getElementById('log' + i));
-            document.getElementById('log' + i).classList.remove('visible');
-        }
-
-        // Reset action cards
-        var actionIds = ['pAction1', 'pAction2', 'pAction3'];
-        var arrowIds = ['pArrow1', 'pArrow2'];
-        actionIds.forEach(function(id) {
-            document.getElementById(id).classList.remove('visible', 'highlight');
-        });
-        arrowIds.forEach(function(id) {
-            document.getElementById(id).classList.remove('visible');
-        });
-
-        // Show log lines (1.2s per line)
-        var lineDelay = 1200;
-        logLines.forEach(function(line, idx) {
             setTimeout(function() {
-                line.classList.add('visible');
+                var testing = document.getElementById('conn-testing');
+                if (testing) testing.classList.add('visible');
+            }, 1000);
 
-                if (idx === 1) {
-                    document.getElementById('pAction1').classList.add('visible');
+            setTimeout(function() {
+                var stat = document.getElementById('conn-stat');
+                if (stat) {
+                    stat.className = 'conn-status connected';
+                    stat.innerHTML = '&#9679; Connected';
                 }
-                if (idx === 3) {
-                    document.getElementById('pArrow1').classList.add('visible');
-                    document.getElementById('pAction2').classList.add('visible');
+                var testing = document.getElementById('conn-testing');
+                if (testing) {
+                    testing.textContent = 'Connection verified \u2713';
+                    testing.style.color = '#22c55e';
                 }
-                if (idx === 4) {
-                    document.getElementById('pArrow2').classList.add('visible');
-                    document.getElementById('pAction3').classList.add('visible');
+            }, 3000);
+
+            setTimeout(function() {
+                var btn = document.getElementById('btn-configure');
+                if (btn) {
+                    btn.style.display = 'inline-flex';
+                    requestAnimationFrame(function() { btn.style.opacity = '1'; btn.style.transition = 'opacity 0.4s'; });
                 }
-                if (idx === 7) {
-                    actionIds.forEach(function(aId) {
-                        document.getElementById(aId).classList.add('highlight');
-                    });
-                }
-            }, lineDelay * (idx + 1));
-        });
-
-        // Auto-advance after all lines + 3s buffer
-        var totalTime = lineDelay * 9 + 3000;
-        autoAdvanceTimeout = setTimeout(function() {
-            showScreen(8);
-            runEmailScreen();
-        }, totalTime);
-    }
-
-    // ========================================
-    // SCREEN 3.4: Customer Email
-    // ========================================
-    function runEmailScreen() {
-        autoAdvanceTimeout = setTimeout(function() {
-            showScreen(9);
-            runLiveScreen();
-        }, 5000);
-    }
-
-    // ========================================
-    // SCREEN 3.5: Product Live
-    // ========================================
-    function runLiveScreen() {
-        stopTimer();
-        var timerEl = document.getElementById('simTimer');
-        timerEl.textContent = '0:22';
-        timerEl.classList.add('done');
-
-        // Mark all dots completed, last active
-        for (var i = 0; i < TOTAL_SCREENS; i++) {
-            var dot = document.getElementById('dot' + i);
-            dot.classList.remove('active');
-            dot.classList.add('completed');
+            }, 4000);
         }
-        var lastDot = document.getElementById('dot' + (TOTAL_SCREENS - 1));
-        lastDot.classList.remove('completed');
-        lastDot.classList.add('active');
 
-        // All stages completed
-        document.getElementById('stage1pill').classList.remove('active');
-        document.getElementById('stage1pill').classList.add('completed');
-        document.getElementById('stage2pill').classList.remove('active');
-        document.getElementById('stage2pill').classList.add('completed');
-        document.getElementById('stage3pill').classList.remove('active');
-        document.getElementById('stage3pill').classList.add('completed');
-    }
+        function screen1_3() {
+            render(
+                '<div class="screen-content purple-tint">' +
+                '<div class="action-label label-system">&#9881;&#65039; SYSTEM ACTION</div>' +
+                '<div class="sim-screen-title">Connection Verified</div>' +
+                '<div style="margin:20px 0;">' +
+                    '<div class="lifecycle-flow">' +
+                        '<div class="lifecycle-node">Pre-Connected</div>' +
+                        '<span class="lifecycle-arrow">&#8594;</span>' +
+                        '<div class="lifecycle-node active-node pulse-green">Connected</div>' +
+                        '<span class="lifecycle-arrow">&#8594;</span>' +
+                        '<div class="lifecycle-node">Disconnected</div>' +
+                        '<span class="lifecycle-arrow">&#8594;</span>' +
+                        '<div class="lifecycle-node">Reconnect</div>' +
+                    '</div>' +
+                '</div>' +
+                '<p class="lifecycle-note">OAuth tokens expire periodically. The platform detects expiry and prompts reconnection. No payment data is lost.</p>' +
+                '<p style="margin-top:16px;color:#818cf8;font-size:13px;">Advancing to automation configuration...</p>' +
+                '</div>'
+            );
 
-    // ========================================
-    // RESET
-    // ========================================
-    window.resetSimulation = function() {
-        if (autoAdvanceTimeout) {
-            clearTimeout(autoAdvanceTimeout);
-            autoAdvanceTimeout = null;
+            setTimeout(function() { goToScreen(3); }, 4000);
         }
-        stopTimer();
-        elapsedMs = 0;
 
-        var timerEl = document.getElementById('simTimer');
-        timerEl.textContent = '0:00';
-        timerEl.classList.remove('done');
+        function screen2_1() {
+            render(
+                '<div class="screen-content purple-tint">' +
+                '<div class="action-label label-system">&#9881;&#65039; SYSTEM ACTION</div>' +
+                '<div class="sim-screen-title">Configure Automation Actions</div>' +
+                '<div class="auto-pipeline">' +
+                    '<div class="auto-card" id="ac-trigger">' +
+                        '<div class="auto-card-header"><div class="auto-card-icon">&#9889;</div><div class="auto-card-name">Trigger: Payment Webhook Received</div></div>' +
+                    '</div>' +
+                    '<div class="auto-connector" id="ac-conn-1"></div>' +
+                    '<div class="auto-card" id="ac-1">' +
+                        '<div class="auto-card-header"><div class="auto-card-icon">1</div><div class="auto-card-name">Charge Order</div></div>' +
+                        '<div class="auto-card-meta">Input: order_id &nbsp;|&nbsp; Output: order_id, success &nbsp;|&nbsp; "Matches payment to existing order"</div>' +
+                    '</div>' +
+                    '<div class="auto-connector" id="ac-conn-2"></div>' +
+                    '<div class="auto-card" id="ac-2">' +
+                        '<div class="auto-card-header"><div class="auto-card-icon">2</div><div class="auto-card-name">Send Invoice</div></div>' +
+                        '<div class="auto-card-meta">Input: namespace, invoice_id &nbsp;|&nbsp; Output: success &nbsp;|&nbsp; "Generates and emails invoice to customer"</div>' +
+                    '</div>' +
+                    '<div class="auto-connector" id="ac-conn-3"></div>' +
+                    '<div class="auto-card" id="ac-3">' +
+                        '<div class="auto-card-header"><div class="auto-card-icon">3</div><div class="auto-card-name">Pay Invoice</div></div>' +
+                        '<div class="auto-card-meta">Input: namespace, invoice_id &nbsp;|&nbsp; Output: invoice_id &nbsp;|&nbsp; "Marks paid, triggers product activation"</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="auto-note" id="auto-note" style="opacity:0;">Same 3 actions for ALL partners. No per-partner code. Zoek, Telkom, and Italia Online use identical automation.</div>' +
+                '<button class="sim-btn" id="btn-activate" style="display:none;opacity:0;" onclick="window.__simNext()">Activate &amp; Test &#8594;</button>' +
+                '</div>'
+            );
 
-        // Reset connection setup
-        var connDot = document.getElementById('connDot');
-        connDot.className = 'status-dot pre-connected';
-        var connStatus = document.getElementById('connStatusText');
-        connStatus.textContent = 'Pre-Connected';
-        connStatus.style.color = '';
-        var connMsg = document.getElementById('connProgressMsg');
-        connMsg.textContent = '';
-        connMsg.style.color = '';
-        document.getElementById('connBtnArea').innerHTML = '';
+            // Animate cards in with 1.5s delays
+            var ids = ['ac-trigger', 'ac-1', 'ac-2', 'ac-3'];
+            var conns = ['ac-conn-1', 'ac-conn-2', 'ac-conn-3'];
+            ids.forEach(function(id, i) {
+                setTimeout(function() {
+                    var el = document.getElementById(id);
+                    if (el) el.classList.add('visible');
+                    if (i > 0 && conns[i-1]) {
+                        var c = document.getElementById(conns[i-1]);
+                        if (c) c.classList.add('visible');
+                    }
+                }, i * 1500);
+            });
 
-        // Reset automation config
-        document.getElementById('autoTrigger').classList.remove('visible');
-        ['autoArrow0','autoArrow1','autoArrow2'].forEach(function(id) {
-            document.getElementById(id).classList.remove('visible');
-        });
-        ['autoAction1','autoAction2','autoAction3'].forEach(function(id) {
-            document.getElementById(id).classList.remove('visible');
-        });
-        document.getElementById('autoNote').classList.remove('visible');
-        document.getElementById('autoBtnArea').innerHTML = '';
-
-        // Reset payment screen
-        document.getElementById('paySpinner').style.display = 'block';
-        document.getElementById('payStatus').textContent = 'Processing payment...';
-        document.getElementById('payStatus').classList.remove('success');
-        document.getElementById('payWebhook').classList.remove('show');
-
-        // Reset pipeline
-        for (var i = 0; i <= 7; i++) {
-            document.getElementById('log' + i).classList.remove('visible');
+            setTimeout(function() {
+                var note = document.getElementById('auto-note');
+                if (note) { note.style.transition = 'opacity 0.5s'; note.style.opacity = '1'; }
+                var btn = document.getElementById('btn-activate');
+                if (btn) { btn.style.display = 'inline-flex'; requestAnimationFrame(function() { btn.style.transition = 'opacity 0.4s'; btn.style.opacity = '1'; }); }
+            }, 6500);
         }
-        ['pAction1','pAction2','pAction3'].forEach(function(id) {
-            document.getElementById(id).classList.remove('visible', 'highlight');
-        });
-        ['pArrow1','pArrow2'].forEach(function(id) {
-            document.getElementById(id).classList.remove('visible');
-        });
 
-        // Reset stage pills
-        document.getElementById('stage1pill').classList.remove('completed');
-        document.getElementById('stage1pill').classList.add('active');
-        document.getElementById('stage2pill').classList.remove('active', 'completed');
-        document.getElementById('stage3pill').classList.remove('active', 'completed');
+        function screen2_2() {
+            render(
+                '<div class="screen-content purple-tint">' +
+                '<div class="action-label label-system">&#9881;&#65039; SYSTEM ACTION</div>' +
+                '<div class="sim-screen-title">Automation Active</div>' +
+                '<div class="status-grid">' +
+                    '<div class="status-item"><span class="s-label">Status</span><span class="s-value green">ACTIVE &#10003;</span></div>' +
+                    '<div class="status-item"><span class="s-label">Trigger</span><span class="s-value">Payment Webhook</span></div>' +
+                    '<div class="status-item"><span class="s-label">Actions</span><span class="s-value">3 configured</span></div>' +
+                    '<div class="status-item"><span class="s-label">Partners</span><span class="s-value" style="font-size:11px;">Zoek, Telkom, Italia Online</span></div>' +
+                '</div>' +
+                '<div style="margin-top:16px;">' +
+                    '<div style="padding:10px 14px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:13px;color:#4ade80;text-align:center;">Zoek: Wix Payments &nbsp;&bull;&nbsp; Telkom: PayFast (requested) &nbsp;&bull;&nbsp; Italia Online: Stripe Connect</div>' +
+                '</div>' +
+                '<p style="margin-top:16px;color:#818cf8;font-size:13px;">Advancing to live payment flow...</p>' +
+                '</div>'
+            );
 
-        showScreen(0);
-    };
-})();
-</script>
+            setTimeout(function() { goToScreen(5); }, 4000);
+        }
+
+        function screen3_1() {
+            render(
+                '<div class="screen-content blue-tint">' +
+                '<div class="action-label label-customer">&#129489; CUSTOMER ACTION</div>' +
+                '<div class="sim-screen-title">Customer Storefront</div>' +
+                '<div class="storefront">' +
+                    '<div class="product-row in-cart">' +
+                        '<div><span class="product-name">AI Chat Receptionist</span><span class="cart-badge">IN CART</span></div>' +
+                        '<span class="product-price">$79/mo</span>' +
+                    '</div>' +
+                    '<div class="product-row">' +
+                        '<span class="product-name">AI Voice Receptionist</span>' +
+                        '<span class="product-price">$199/mo</span>' +
+                    '</div>' +
+                    '<div class="product-row">' +
+                        '<span class="product-name">Reputation AI</span>' +
+                        '<span class="product-price">$99/mo</span>' +
+                    '</div>' +
+                    '<div class="cart-total">' +
+                        '<span class="cart-total-label">Total</span>' +
+                        '<span class="cart-total-amount">$79.00</span>' +
+                    '</div>' +
+                    '<div class="payment-via">Payment via: ' + gw().name + '</div>' +
+                    '<button class="sim-btn" onclick="window.__simNext()">Pay Now &#8594;</button>' +
+                '</div>' +
+                '</div>'
+            );
+        }
+
+        function screen3_2() {
+            render(
+                '<div class="screen-content blue-tint" id="payment-screen">' +
+                '<div class="action-label label-customer" id="payment-label">&#129489; CUSTOMER ACTION</div>' +
+                '<div class="sim-screen-title">Payment Processing</div>' +
+                '<div class="payment-processing">' +
+                    '<div class="payment-card-display">' +
+                        '<div class="payment-detail"><span class="pd-label">Card</span><span class="pd-value">&#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; 4242</span></div>' +
+                        '<div class="payment-detail"><span class="pd-label">Amount</span><span class="pd-value">$79.00</span></div>' +
+                        '<div class="payment-detail"><span class="pd-label">Gateway</span><span class="pd-value">' + gw().name + '</span></div>' +
+                    '</div>' +
+                    '<div class="payment-spinner" id="pay-spinner"></div>' +
+                    '<div class="payment-status" id="pay-status-1">&#10003; Payment Accepted</div>' +
+                    '<div class="payment-status" id="pay-status-2">Webhook firing to platform... (zero human involvement from this point)</div>' +
+                '</div>' +
+                '</div>'
+            );
+
+            // After 3s: payment accepted
+            setTimeout(function() {
+                var spinner = document.getElementById('pay-spinner');
+                if (spinner) spinner.style.display = 'none';
+                var s1 = document.getElementById('pay-status-1');
+                if (s1) { s1.classList.add('visible'); s1.classList.add('success'); }
+            }, 3000);
+
+            // After 5s: label changes to system, webhook message
+            setTimeout(function() {
+                var label = document.getElementById('payment-label');
+                if (label) {
+                    label.className = 'action-label label-system';
+                    label.innerHTML = '&#9881;&#65039; SYSTEM ACTION';
+                }
+                var screen = document.getElementById('payment-screen');
+                if (screen) {
+                    screen.className = 'screen-content purple-tint';
+                }
+                var s2 = document.getElementById('pay-status-2');
+                if (s2) { s2.classList.add('visible'); s2.classList.add('webhook'); }
+            }, 5000);
+
+            // Auto-advance at 7s
+            setTimeout(function() { goToScreen(7); }, 7000);
+        }
+
+        function screen3_3() {
+            var gwName = gw().name;
+            var lines = [
+                { time: '0:02', icon: '&#10003;', text: 'Webhook received — payment event from ' + gwName, cls: '' },
+                { time: '0:04', icon: '&#10003;', text: 'Charge Order — order matched (ORD-28471)', cls: '' },
+                { time: '0:07', icon: '&#10003;', text: 'Get Invoice Data — invoice retrieved (INV-39182)', cls: '' },
+                { time: '0:09', icon: '&#10003;', text: 'Send Invoice — invoice emailed to customer', cls: '' },
+                { time: '0:12', icon: '&#10003;', text: 'Pay Invoice — payment applied', cls: '' },
+                { time: '0:15', icon: '&#10003;', text: 'Create Sales Order &amp; Activate — product activation triggered', cls: '' },
+                { time: '0:18', icon: '&#8635;', text: 'Activating AI Chat Receptionist...', cls: 'dim' },
+                { time: '0:22', icon: '&#10003;', text: 'AI Chat Receptionist — ACTIVE', cls: '' }
+            ];
+
+            var linesHtml = lines.map(function(l, i) {
+                return '<div class="term-line" id="tl-' + i + '">' +
+                    '<span class="term-time">[' + l.time + ']</span>' +
+                    '<span class="' + (l.icon === '&#8635;' ? 'term-spin' : 'term-check') + '">' + l.icon + '</span>' +
+                    '<span class="term-text ' + l.cls + '">' + l.text + '</span>' +
+                '</div>';
+            }).join('');
+
+            render(
+                '<div class="screen-content purple-tint">' +
+                '<div class="action-label label-system">&#9881;&#65039; SYSTEM ACTION</div>' +
+                '<div class="sim-screen-title">Automation Pipeline</div>' +
+                '<div class="terminal">' +
+                    '<div class="terminal-bar">' +
+                        '<div class="terminal-dot r"></div><div class="terminal-dot y"></div><div class="terminal-dot g"></div>' +
+                        '<span class="terminal-title">payment-automation-pipeline</span>' +
+                    '</div>' +
+                    '<div class="terminal-body">' + linesHtml + '</div>' +
+                '</div>' +
+                '<div class="pipeline-actions">' +
+                    '<div class="pipeline-action-card" id="pa-1">Charge Order</div>' +
+                    '<div class="pipeline-action-card" id="pa-2">Send Invoice</div>' +
+                    '<div class="pipeline-action-card" id="pa-3">Pay Invoice</div>' +
+                '</div>' +
+                '<div class="pipeline-big-label" id="pipeline-label" style="opacity:0;">ZERO HUMAN STEPS — entire pipeline is automated</div>' +
+                '</div>'
+            );
+
+            // Reveal lines at 1.2s intervals
+            lines.forEach(function(_, i) {
+                setTimeout(function() {
+                    var el = document.getElementById('tl-' + i);
+                    if (el) el.classList.add('visible');
+                    // Light up action cards
+                    if (i === 1) { var c = document.getElementById('pa-1'); if (c) c.classList.add('lit'); }
+                    if (i === 3) { var c = document.getElementById('pa-2'); if (c) c.classList.add('lit'); }
+                    if (i === 4) { var c = document.getElementById('pa-3'); if (c) c.classList.add('lit'); }
+                }, i * 1200);
+            });
+
+            var totalLineTime = lines.length * 1200;
+
+            setTimeout(function() {
+                var lbl = document.getElementById('pipeline-label');
+                if (lbl) { lbl.style.transition = 'opacity 0.5s'; lbl.style.opacity = '1'; }
+            }, totalLineTime);
+
+            // Auto-advance: total line time + 3s buffer
+            setTimeout(function() { goToScreen(8); }, totalLineTime + 3000);
+        }
+
+        function screen3_4() {
+            render(
+                '<div class="screen-content green-tint">' +
+                '<div class="action-label label-notification">&#128231; NOTIFICATION</div>' +
+                '<div class="sim-screen-title">Customer Receives Email</div>' +
+                '<div class="email-mockup">' +
+                    '<div class="email-header">' +
+                        '<div class="email-field">From: <span>noreply@platform.com</span></div>' +
+                        '<div class="email-field">To: <span>sarah@brightsmiledental.com</span></div>' +
+                        '<div class="email-subject">Your AI Chat Receptionist is now active!</div>' +
+                    '</div>' +
+                    '<div class="email-body">' +
+                        '<p>Hi Sarah,</p>' +
+                        '<p style="margin-top:8px;">Your AI Chat Receptionist is live and answering customer questions 24/7.</p>' +
+                        '<div class="email-invoice-row">' +
+                            '<div class="email-invoice-item"><span class="ei-label">Invoice</span><span class="ei-value">INV-39182</span></div>' +
+                            '<div class="email-invoice-item"><span class="ei-label">Amount</span><span class="ei-value">$79.00</span></div>' +
+                            '<div class="email-invoice-item"><span class="ei-label">Status</span><span class="ei-value" style="color:#22c55e;">Paid &#10003;</span></div>' +
+                        '</div>' +
+                        '<div style="text-align:center;"><span class="email-cta">Open Your Dashboard &#8594;</span></div>' +
+                    '</div>' +
+                    '<div class="email-footer">Sent automatically — no human composed this email</div>' +
+                '</div>' +
+                '</div>'
+            );
+
+            setTimeout(function() { goToScreen(9); }, 5000);
+        }
+
+        function screen3_5() {
+            render(
+                '<div class="screen-content">' +
+                '<div class="action-label label-result">&#10004; RESULT</div>' +
+                '<div class="sim-screen-title">Product Live</div>' +
+                '<div class="product-live">' +
+                    '<div class="chat-widget">' +
+                        '<div class="chat-header">' +
+                            '<div class="chat-avatar">&#129302;</div>' +
+                            '<div><div class="chat-name">AI Assistant</div><div class="chat-online">&#9679; Online</div></div>' +
+                        '</div>' +
+                        '<div class="chat-bubble">Hi! I\'m your AI assistant for BrightSmile Dental. How can I help you today?</div>' +
+                    '</div>' +
+                    '<div class="live-stats">' +
+                        '<div class="live-stat"><div class="live-stat-value">Just now</div><div class="live-stat-label">Activated</div></div>' +
+                        '<div class="live-stat"><div class="live-stat-value">0:22</div><div class="live-stat-label">Total time</div></div>' +
+                        '<div class="live-stat"><div class="live-stat-value">0</div><div class="live-stat-label">Human steps</div></div>' +
+                        '<div class="live-stat"><div class="live-stat-value">' + gw().short + '</div><div class="live-stat-label">Connected via</div></div>' +
+                    '</div>' +
+                    '<div class="live-message">"The customer paid and the product was live before they closed the browser tab."</div>' +
+                    '<button class="sim-btn" onclick="window.__simReset()" style="background:var(--gradient-2);">&#8634; Run Again</button>' +
+                '</div>' +
+                '</div>'
+            );
+        }
+
+        // Navigation
+        var screens = [screen1_1, screen1_2, screen1_3, screen2_1, screen2_2, screen3_1, screen3_2, screen3_3, screen3_4, screen3_5];
+
+        function goToScreen(index) {
+            if (index < 0 || index >= screens.length) return;
+            currentScreen = index;
+            screens[currentScreen]();
+        }
+
+        window.__simNext = function() {
+            goToScreen(currentScreen + 1);
+        };
+
+        window.__simReset = function() {
+            selectedGateway = null;
+            goToScreen(0);
+        };
+
+        // Initialize
+        goToScreen(0);
+    })();
+    </script>
 
 </body>
 </html>
