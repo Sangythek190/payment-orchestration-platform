@@ -1627,23 +1627,23 @@
         status.classList.remove('success');
         webhook.classList.remove('show');
 
-        // After 1.5s: Payment Accepted
+        // After 3s: Payment Accepted
         setTimeout(function() {
             spinner.style.display = 'none';
             status.innerHTML = '&#10003; Payment Accepted';
             status.classList.add('success');
-        }, 1500);
+        }, 3000);
 
-        // After 2s: Webhook message
+        // After 4.5s: Webhook message
         setTimeout(function() {
             webhook.classList.add('show');
-        }, 2000);
+        }, 4500);
 
-        // After 3s: Auto-advance
+        // After 7s: Auto-advance
         autoAdvanceTimeout = setTimeout(function() {
             showScreen(3);
             runPipelineScreen();
-        }, 3000);
+        }, 7000);
     }
 
     // ========================================
@@ -1667,8 +1667,8 @@
             document.getElementById(id).classList.remove('visible');
         });
 
-        // Show log lines one by one
-        var lineDelay = 600;
+        // Show log lines one by one (1.2s per line — slow enough to read)
+        var lineDelay = 1200;
         logLines.forEach(function(line, idx) {
             setTimeout(function() {
                 line.classList.add('visible');
@@ -1696,8 +1696,8 @@
             }, lineDelay * (idx + 1));
         });
 
-        // Auto-advance after all lines + buffer
-        var totalTime = lineDelay * 9 + 1000;
+        // Auto-advance after all lines + 3s buffer to read the final state
+        var totalTime = lineDelay * 9 + 3000;
         autoAdvanceTimeout = setTimeout(function() {
             showScreen(4);
             runEmailScreen();
@@ -1708,10 +1708,11 @@
     // SCREEN 4: Customer Email
     // ========================================
     function runEmailScreen() {
+        // 5s to read the email before advancing
         autoAdvanceTimeout = setTimeout(function() {
             showScreen(5);
             runLiveScreen();
-        }, 3000);
+        }, 5000);
     }
 
     // ========================================
