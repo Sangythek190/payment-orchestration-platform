@@ -38,7 +38,6 @@
             overflow-x: hidden;
         }
 
-        /* Background grid effect */
         body::before {
             content: '';
             position: fixed;
@@ -83,6 +82,7 @@
             background: linear-gradient(135deg, #fff 0%, #818cf8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 16px;
             letter-spacing: -1px;
         }
@@ -101,9 +101,7 @@
             margin-top: 40px;
         }
 
-        .hero-stat {
-            text-align: center;
-        }
+        .hero-stat { text-align: center; }
 
         .hero-stat-value {
             font-size: 36px;
@@ -117,10 +115,8 @@
             margin-top: 4px;
         }
 
-        /* Section */
-        .section {
-            padding: 60px 0;
-        }
+        /* Sections */
+        .section { padding: 60px 0; }
 
         .section-label {
             font-size: 12px;
@@ -143,6 +139,595 @@
             margin-bottom: 40px;
         }
 
+        /* ========================================
+           INTERACTIVE SIMULATION
+           ======================================== */
+        .sim-section {
+            padding: 60px 0;
+        }
+
+        .sim-outer {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .sim-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .sim-progress {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .sim-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: all 0.4s ease;
+        }
+
+        .sim-dot.active {
+            background: var(--accent);
+            border-color: var(--accent-light);
+            box-shadow: 0 0 8px rgba(99,102,241,0.5);
+        }
+
+        .sim-dot.completed {
+            background: var(--green);
+            border-color: var(--green);
+            box-shadow: 0 0 8px rgba(34,197,94,0.4);
+        }
+
+        .sim-timer {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-light);
+            background: rgba(99,102,241,0.1);
+            padding: 4px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(99,102,241,0.2);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .sim-timer.done {
+            color: var(--green);
+            background: rgba(34,197,94,0.1);
+            border-color: rgba(34,197,94,0.2);
+        }
+
+        .sim-screen-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sim-body {
+            padding: 0;
+            min-height: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sim-screen {
+            display: none;
+            width: 100%;
+            padding: 40px;
+            animation: simFadeIn 0.4s ease;
+        }
+
+        .sim-screen.active { display: block; }
+
+        @keyframes simFadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Screen 1 - Storefront */
+        .storefront {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .storefront-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .storefront-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .product-item.in-cart {
+            border-color: var(--accent);
+            background: rgba(99,102,241,0.08);
+        }
+
+        .product-info { display: flex; align-items: center; gap: 14px; }
+
+        .product-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .product-name { font-size: 14px; font-weight: 600; }
+        .product-desc { font-size: 12px; color: var(--text-muted); }
+
+        .product-price {
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .cart-badge {
+            font-size: 11px;
+            background: var(--accent);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        .cart-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 24px;
+            padding: 20px 24px;
+            background: rgba(99,102,241,0.06);
+            border: 1px solid rgba(99,102,241,0.15);
+            border-radius: 12px;
+        }
+
+        .cart-total-label { font-size: 14px; color: var(--text-muted); }
+        .cart-total-value { font-size: 28px; font-weight: 700; color: var(--accent-light); }
+
+        .sim-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .sim-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99,102,241,0.3);
+        }
+
+        .sim-btn.green {
+            background: var(--gradient-2);
+        }
+
+        .sim-btn.green:hover {
+            box-shadow: 0 8px 24px rgba(34,197,94,0.3);
+        }
+
+        /* Screen 2 - Payment */
+        .payment-screen {
+            max-width: 440px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .payment-card {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .payment-gateway-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .payment-card-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 14px;
+        }
+
+        .payment-card-row:last-child { border-bottom: none; }
+        .payment-card-row .label { color: var(--text-muted); }
+        .payment-card-row .value { font-weight: 600; }
+
+        .payment-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(99,102,241,0.2);
+            border-top-color: var(--accent-light);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 24px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .payment-status {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 16px 0;
+            min-height: 28px;
+        }
+
+        .payment-status.success { color: var(--green); }
+
+        .payment-webhook {
+            font-size: 13px;
+            color: var(--accent-light);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .payment-webhook.show { opacity: 1; }
+
+        /* Screen 3 - Automation Pipeline */
+        .pipeline-screen {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .pipeline-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .pipeline-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 24px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .pipeline-log {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 20px 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 2;
+            min-height: 260px;
+        }
+
+        .log-line {
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.4s ease;
+        }
+
+        .log-line.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .log-time { color: var(--text-muted); }
+        .log-check { color: var(--green); }
+        .log-spin { color: var(--yellow); }
+        .log-label { color: var(--text); }
+        .log-detail { color: var(--text-muted); font-size: 12px; }
+
+        .pipeline-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            justify-content: center;
+        }
+
+        .pipeline-action {
+            background: rgba(99,102,241,0.08);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 10px;
+            padding: 14px 20px;
+            text-align: center;
+            flex: 1;
+            max-width: 180px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.5s ease;
+        }
+
+        .pipeline-action.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pipeline-action.highlight {
+            border-color: var(--green);
+            background: rgba(34,197,94,0.08);
+        }
+
+        .pipeline-action-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-light);
+        }
+
+        .pipeline-action.highlight .pipeline-action-name {
+            color: var(--green);
+        }
+
+        .pipeline-action-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .pipeline-arrow {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .pipeline-arrow.visible { opacity: 1; }
+
+        /* Screen 4 - Email */
+        .email-screen {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .email-mockup {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .email-toolbar {
+            display: flex;
+            gap: 6px;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .email-toolbar-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .email-header-area {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .email-field {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            padding: 4px 0;
+        }
+
+        .email-field .label {
+            color: var(--text-muted);
+            min-width: 60px;
+        }
+
+        .email-field .value { color: var(--text); }
+
+        .email-subject {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        .email-body-area {
+            padding: 24px;
+        }
+
+        .email-body-area p {
+            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 16px;
+            line-height: 1.7;
+        }
+
+        .email-invoice-table {
+            display: flex;
+            gap: 24px;
+            padding: 16px 20px;
+            background: rgba(99,102,241,0.06);
+            border: 1px solid rgba(99,102,241,0.12);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .email-invoice-item { text-align: center; }
+        .email-invoice-item .label { color: var(--text-muted); font-size: 11px; }
+        .email-invoice-item .value { font-weight: 700; margin-top: 2px; }
+        .email-invoice-item .value.paid { color: var(--green); }
+
+        .email-cta {
+            display: inline-block;
+            background: var(--gradient-1);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Screen 5 - Product Live */
+        .live-screen {
+            max-width: 560px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .chat-widget-mockup {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+
+        .chat-header {
+            background: var(--gradient-1);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .chat-header-text { color: white; }
+        .chat-header-text .name { font-size: 14px; font-weight: 700; }
+        .chat-header-text .status { font-size: 11px; opacity: 0.85; }
+
+        .chat-messages {
+            padding: 20px;
+            min-height: 120px;
+        }
+
+        .chat-bubble {
+            background: rgba(99,102,241,0.1);
+            border: 1px solid rgba(99,102,241,0.15);
+            border-radius: 16px 16px 16px 4px;
+            padding: 14px 18px;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 85%;
+        }
+
+        .chat-input-area {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .chat-send {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .live-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 20px;
+        }
+
+        .live-stat {
+            text-align: center;
+        }
+
+        .live-stat-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .live-stat-value.green { color: var(--green); }
+        .live-stat-value.accent { color: var(--accent-light); }
+
+        .live-stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .live-message {
+            font-size: 15px;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
         /* Before/After */
         .comparison {
             display: grid;
@@ -161,9 +746,7 @@
             overflow: hidden;
         }
 
-        .comparison-card.before {
-            border-color: rgba(239,68,68,0.2);
-        }
+        .comparison-card.before { border-color: rgba(239,68,68,0.2); }
 
         .comparison-card.before::before {
             content: '';
@@ -173,9 +756,7 @@
             background: var(--red);
         }
 
-        .comparison-card.after {
-            border-color: rgba(34,197,94,0.2);
-        }
+        .comparison-card.after { border-color: rgba(34,197,94,0.2); }
 
         .comparison-card.after::before {
             content: '';
@@ -185,10 +766,7 @@
             background: var(--green);
         }
 
-        .comparison-card h3 {
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
+        .comparison-card h3 { font-size: 20px; margin-bottom: 8px; }
 
         .comparison-card .subtitle {
             color: var(--text-muted);
@@ -196,9 +774,7 @@
             margin-bottom: 24px;
         }
 
-        .step-list {
-            list-style: none;
-        }
+        .step-list { list-style: none; }
 
         .step-list li {
             display: flex;
@@ -222,15 +798,8 @@
             font-weight: 700;
         }
 
-        .before .step-num {
-            background: var(--red-glow);
-            color: var(--red);
-        }
-
-        .after .step-num {
-            background: var(--green-glow);
-            color: var(--green);
-        }
+        .before .step-num { background: var(--red-glow); color: var(--red); }
+        .after .step-num { background: var(--green-glow); color: var(--green); }
 
         .step-time {
             margin-left: auto;
@@ -248,155 +817,10 @@
             align-items: center;
         }
 
-        .comparison-footer .total-time {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
+        .comparison-footer .total-time { font-size: 24px; font-weight: 700; }
         .before .total-time { color: var(--red); }
         .after .total-time { color: var(--green); }
-
-        .comparison-footer .total-label {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* Interactive Flow */
-        .flow-section {
-            padding: 60px 0;
-        }
-
-        .flow-container {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 48px;
-            backdrop-filter: blur(10px);
-            text-align: center;
-        }
-
-        .flow-steps {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0;
-            margin: 40px 0;
-            flex-wrap: wrap;
-        }
-
-        .flow-step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            opacity: 0.3;
-            transition: all 0.5s ease;
-            min-width: 140px;
-        }
-
-        .flow-step.active {
-            opacity: 1;
-        }
-
-        .flow-step.completed .flow-icon {
-            background: var(--green-glow);
-            border-color: var(--green);
-            color: var(--green);
-        }
-
-        .flow-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
-            border: 2px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            background: var(--surface);
-            transition: all 0.5s ease;
-        }
-
-        .flow-step.active .flow-icon {
-            border-color: var(--accent);
-            background: rgba(99,102,241,0.15);
-            box-shadow: 0 0 30px rgba(99,102,241,0.2);
-        }
-
-        .flow-label {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .flow-sublabel {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .flow-arrow {
-            font-size: 20px;
-            color: var(--text-muted);
-            margin: 0 8px;
-            opacity: 0.3;
-            transition: all 0.5s ease;
-        }
-
-        .flow-arrow.active {
-            opacity: 1;
-            color: var(--green);
-        }
-
-        .flow-timer {
-            font-size: 48px;
-            font-weight: 700;
-            margin: 24px 0 8px;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .flow-timer.running {
-            color: var(--accent-light);
-        }
-
-        .flow-timer.done {
-            color: var(--green);
-        }
-
-        .flow-status {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-            min-height: 20px;
-        }
-
-        .flow-btn {
-            background: var(--gradient-1);
-            border: none;
-            color: white;
-            padding: 14px 32px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s;
-        }
-
-        .flow-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(99,102,241,0.3);
-        }
-
-        .flow-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .flow-btn.reset {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            margin-left: 12px;
-        }
+        .comparison-footer .total-label { font-size: 12px; color: var(--text-muted); }
 
         /* Partner Cards */
         .partner-grid {
@@ -427,19 +851,9 @@
             margin-bottom: 20px;
         }
 
-        .partner-flag {
-            font-size: 28px;
-        }
-
-        .partner-name {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .partner-sub {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
+        .partner-flag { font-size: 28px; }
+        .partner-name { font-size: 18px; font-weight: 700; }
+        .partner-sub { font-size: 12px; color: var(--text-muted); }
 
         .partner-detail {
             display: flex;
@@ -450,9 +864,7 @@
         }
 
         .partner-detail:last-child { border-bottom: none; }
-
         .partner-detail-label { color: var(--text-muted); }
-
         .partner-detail-value { font-weight: 600; }
 
         .partner-status {
@@ -464,20 +876,9 @@
             margin-top: 16px;
         }
 
-        .status-live {
-            background: var(--green-glow);
-            color: var(--green);
-        }
-
-        .status-requested {
-            background: var(--yellow-glow);
-            color: var(--yellow);
-        }
-
-        .status-active {
-            background: var(--blue-glow);
-            color: var(--blue);
-        }
+        .status-live { background: var(--green-glow); color: var(--green); }
+        .status-requested { background: var(--yellow-glow); color: var(--yellow); }
+        .status-active { background: var(--blue-glow); color: var(--blue); }
 
         /* Impact Metrics */
         .impact-grid {
@@ -496,16 +897,8 @@
             backdrop-filter: blur(10px);
         }
 
-        .impact-value {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .impact-label {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
+        .impact-value { font-size: 36px; font-weight: 700; margin-bottom: 4px; }
+        .impact-label { font-size: 13px; color: var(--text-muted); }
 
         .impact-benchmark {
             font-size: 11px;
@@ -541,17 +934,8 @@
             max-width: 200px;
         }
 
-        .arch-block h4 {
-            font-size: 14px;
-            color: var(--accent-light);
-            margin-bottom: 8px;
-        }
-
-        .arch-block p {
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.5;
-        }
+        .arch-block h4 { font-size: 14px; color: var(--accent-light); margin-bottom: 8px; }
+        .arch-block p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
         .arch-arrow-h {
             display: flex;
@@ -584,11 +968,7 @@
             padding: 24px;
         }
 
-        .pm-card h4 {
-            font-size: 14px;
-            color: var(--accent-light);
-            margin-bottom: 8px;
-        }
+        .pm-card h4 { font-size: 14px; color: var(--accent-light); margin-bottom: 8px; }
 
         .pm-card p {
             font-size: 13px;
@@ -604,15 +984,14 @@
             margin-top: 40px;
         }
 
-        .footer p {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
+        .footer p { color: var(--text-muted); font-size: 13px; }
 
         .footer a {
             color: var(--accent-light);
             text-decoration: none;
         }
+
+        .footer a:hover { text-decoration: underline; }
 
         /* Mobile */
         @media (max-width: 768px) {
@@ -621,11 +1000,25 @@
             .comparison { grid-template-columns: 1fr; }
             .partner-grid { grid-template-columns: 1fr; }
             .impact-grid { grid-template-columns: repeat(2, 1fr); }
-            .flow-steps { flex-direction: column; }
-            .flow-arrow { transform: rotate(90deg); }
             .arch-flow { flex-direction: column; align-items: center; }
             .arch-arrow-h { transform: rotate(90deg); }
             .pm-grid { grid-template-columns: 1fr; }
+            .sim-body { min-height: auto; }
+            .sim-screen { padding: 24px 16px; }
+            .pipeline-actions { flex-direction: column; align-items: center; }
+            .pipeline-arrow { transform: rotate(90deg); }
+            .pipeline-action { max-width: 100%; }
+            .email-invoice-table { flex-direction: column; gap: 12px; }
+            .live-stats { flex-direction: column; gap: 16px; }
+            .cart-summary { flex-direction: column; gap: 12px; text-align: center; }
+            .payment-card-row { font-size: 13px; }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 26px; }
+            .section-title { font-size: 24px; }
+            .impact-grid { grid-template-columns: 1fr; }
+            .sim-header { flex-direction: column; gap: 10px; text-align: center; }
         }
     </style>
 </head>
@@ -634,9 +1027,9 @@
 <!-- Hero -->
 <section class="hero">
     <div class="container">
-        <div class="hero-badge">Product Manager Portfolio — Infrastructure Design</div>
+        <div class="hero-badge">Product Manager Portfolio -- Infrastructure Design</div>
         <h1>Zero-Touch Payment<br>Infrastructure</h1>
-        <p>How I designed a reusable payment automation system that compressed partner onboarding from 24 hours to under 5 minutes — serving 3 partners across 3 continents with zero per-partner code.</p>
+        <p>How I designed a reusable payment automation system that compressed partner onboarding from 24 hours to under 5 minutes -- serving 3 partners across 3 continents with zero per-partner code.</p>
         <div class="hero-stats">
             <div class="hero-stat">
                 <div class="hero-stat-value">24h &rarr; 5min</div>
@@ -658,17 +1051,242 @@
     </div>
 </section>
 
+<!-- Interactive Simulation -->
+<section class="sim-section">
+    <div class="container">
+        <div class="section-label">Interactive Simulation</div>
+        <div class="section-title">Experience the Full Payment-to-Activation Flow</div>
+        <div class="section-desc">Click through each screen to see exactly what happens when a customer pays -- from storefront to live product in 22 seconds.</div>
+
+        <div class="sim-outer">
+            <div class="sim-header">
+                <div class="sim-progress">
+                    <div class="sim-dot active" id="dot0"></div>
+                    <div class="sim-dot" id="dot1"></div>
+                    <div class="sim-dot" id="dot2"></div>
+                    <div class="sim-dot" id="dot3"></div>
+                    <div class="sim-dot" id="dot4"></div>
+                </div>
+                <div class="sim-screen-label" id="simLabel">Screen 1 of 5 -- Customer Storefront</div>
+                <div class="sim-timer" id="simTimer">0:00</div>
+            </div>
+
+            <div class="sim-body">
+                <!-- Screen 1: Customer Storefront -->
+                <div class="sim-screen active" id="screen1">
+                    <div class="storefront">
+                        <div class="storefront-title">AI Product Catalog</div>
+                        <div class="storefront-sub">BrightSmile Dental -- Customer Storefront</div>
+
+                        <div class="product-item in-cart">
+                            <div class="product-info">
+                                <div class="product-icon" style="background:rgba(99,102,241,0.15);">&#128172;</div>
+                                <div>
+                                    <div class="product-name">AI Chat Receptionist <span class="cart-badge">IN CART</span></div>
+                                    <div class="product-desc">24/7 automated customer chat for your website</div>
+                                </div>
+                            </div>
+                            <div class="product-price">$79/mo</div>
+                        </div>
+
+                        <div class="product-item">
+                            <div class="product-info">
+                                <div class="product-icon" style="background:rgba(139,92,246,0.15);">&#128222;</div>
+                                <div>
+                                    <div class="product-name">AI Voice Receptionist</div>
+                                    <div class="product-desc">AI-powered phone answering and scheduling</div>
+                                </div>
+                            </div>
+                            <div class="product-price">$199/mo</div>
+                        </div>
+
+                        <div class="product-item">
+                            <div class="product-info">
+                                <div class="product-icon" style="background:rgba(34,197,94,0.15);">&#11088;</div>
+                                <div>
+                                    <div class="product-name">Reputation AI</div>
+                                    <div class="product-desc">Automated review management and responses</div>
+                                </div>
+                            </div>
+                            <div class="product-price">$99/mo</div>
+                        </div>
+
+                        <div class="cart-summary">
+                            <div>
+                                <div class="cart-total-label">Cart Total</div>
+                                <div class="cart-total-value">$79.00</div>
+                            </div>
+                            <button class="sim-btn green" onclick="advanceToScreen(2)">Pay Now &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen 2: Payment Processing -->
+                <div class="sim-screen" id="screen2">
+                    <div class="payment-screen">
+                        <div class="payment-card">
+                            <div class="payment-gateway-label">Payment Gateway</div>
+                            <div class="payment-card-row">
+                                <span class="label">Card</span>
+                                <span class="value">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242</span>
+                            </div>
+                            <div class="payment-card-row">
+                                <span class="label">Amount</span>
+                                <span class="value">$79.00</span>
+                            </div>
+                            <div class="payment-card-row">
+                                <span class="label">Customer</span>
+                                <span class="value">Sarah Chen</span>
+                            </div>
+                            <div class="payment-card-row">
+                                <span class="label">Business</span>
+                                <span class="value">BrightSmile Dental</span>
+                            </div>
+                        </div>
+
+                        <div id="paySpinner" class="payment-spinner"></div>
+                        <div id="payStatus" class="payment-status">Processing payment...</div>
+                        <div id="payWebhook" class="payment-webhook">Webhook firing to platform...</div>
+                    </div>
+                </div>
+
+                <!-- Screen 3: Automation Pipeline -->
+                <div class="sim-screen" id="screen3">
+                    <div class="pipeline-screen">
+                        <div class="pipeline-title">Automation Pipeline</div>
+                        <div class="pipeline-sub">behind the scenes -- real-time processing log</div>
+
+                        <div class="pipeline-log" id="pipelineLog">
+                            <div class="log-line" id="log0"><span class="log-time">[0:02]</span> <span class="log-check">&#10003;</span> <span class="log-label">Webhook received</span> <span class="log-detail">-- payment event captured</span></div>
+                            <div class="log-line" id="log1"><span class="log-time">[0:04]</span> <span class="log-check">&#10003;</span> <span class="log-label">Charge Order</span> <span class="log-detail">-- order matched (ORD-28471)</span></div>
+                            <div class="log-line" id="log2"><span class="log-time">[0:07]</span> <span class="log-check">&#10003;</span> <span class="log-label">Get Invoice Data</span> <span class="log-detail">-- invoice retrieved (INV-39182)</span></div>
+                            <div class="log-line" id="log3"><span class="log-time">[0:09]</span> <span class="log-check">&#10003;</span> <span class="log-label">Send Invoice</span> <span class="log-detail">-- invoice emailed to customer</span></div>
+                            <div class="log-line" id="log4"><span class="log-time">[0:12]</span> <span class="log-check">&#10003;</span> <span class="log-label">Pay Invoice</span> <span class="log-detail">-- payment applied to invoice</span></div>
+                            <div class="log-line" id="log5"><span class="log-time">[0:15]</span> <span class="log-check">&#10003;</span> <span class="log-label">Create Sales Order &amp; Activate</span> <span class="log-detail">-- product activation triggered</span></div>
+                            <div class="log-line" id="log6"><span class="log-time">[0:18]</span> <span class="log-spin">&#8635;</span> <span class="log-label" style="color:var(--yellow)">Activating AI Chat Receptionist...</span></div>
+                            <div class="log-line" id="log7"><span class="log-time">[0:22]</span> <span class="log-check">&#10003;</span> <span class="log-label" style="color:var(--green);font-weight:700;">AI Chat Receptionist -- ACTIVE</span></div>
+                        </div>
+
+                        <div class="pipeline-actions">
+                            <div class="pipeline-action" id="pAction1">
+                                <div class="pipeline-action-name">Charge Order</div>
+                                <div class="pipeline-action-desc">Match order from webhook</div>
+                            </div>
+                            <div class="pipeline-arrow" id="pArrow1">&rarr;</div>
+                            <div class="pipeline-action" id="pAction2">
+                                <div class="pipeline-action-name">Send Invoice</div>
+                                <div class="pipeline-action-desc">Generate and deliver invoice</div>
+                            </div>
+                            <div class="pipeline-arrow" id="pArrow2">&rarr;</div>
+                            <div class="pipeline-action" id="pAction3">
+                                <div class="pipeline-action-name">Pay Invoice</div>
+                                <div class="pipeline-action-desc">Apply payment, activate product</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen 4: Customer Email -->
+                <div class="sim-screen" id="screen4">
+                    <div class="email-screen">
+                        <div class="email-mockup">
+                            <div class="email-toolbar">
+                                <div class="email-toolbar-dot" style="background:#ef4444"></div>
+                                <div class="email-toolbar-dot" style="background:#eab308"></div>
+                                <div class="email-toolbar-dot" style="background:#22c55e"></div>
+                            </div>
+                            <div class="email-header-area">
+                                <div class="email-field">
+                                    <span class="label">From:</span>
+                                    <span class="value">noreply@platform.com</span>
+                                </div>
+                                <div class="email-field">
+                                    <span class="label">To:</span>
+                                    <span class="value">sarah@brightsmiledental.com</span>
+                                </div>
+                                <div class="email-subject">Your AI Chat Receptionist is now active!</div>
+                            </div>
+                            <div class="email-body-area">
+                                <p>Hi Sarah,</p>
+                                <p>Your AI Chat Receptionist is live and ready to answer customer questions on your website 24/7.</p>
+                                <div class="email-invoice-table">
+                                    <div class="email-invoice-item">
+                                        <div class="label">Invoice</div>
+                                        <div class="value">INV-39182</div>
+                                    </div>
+                                    <div class="email-invoice-item">
+                                        <div class="label">Amount</div>
+                                        <div class="value">$79.00</div>
+                                    </div>
+                                    <div class="email-invoice-item">
+                                        <div class="label">Status</div>
+                                        <div class="value paid">Paid &#10003;</div>
+                                    </div>
+                                </div>
+                                <a href="#" class="email-cta" onclick="return false;">Open Your Dashboard &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screen 5: Product Live -->
+                <div class="sim-screen" id="screen5">
+                    <div class="live-screen">
+                        <div class="chat-widget-mockup">
+                            <div class="chat-header">
+                                <div class="chat-avatar">&#129302;</div>
+                                <div class="chat-header-text">
+                                    <div class="name">BrightSmile Dental Assistant</div>
+                                    <div class="status">&#9679; Online now</div>
+                                </div>
+                            </div>
+                            <div class="chat-messages">
+                                <div class="chat-bubble">
+                                    Hi! I'm your AI assistant for BrightSmile Dental. How can I help you today? I can answer questions about our services, help you book an appointment, or provide office hours and location information.
+                                </div>
+                            </div>
+                            <div class="chat-input-area">
+                                <div class="chat-input">Type your message...</div>
+                                <div class="chat-send">&#8593;</div>
+                            </div>
+                        </div>
+
+                        <div class="live-stats">
+                            <div class="live-stat">
+                                <div class="live-stat-value green">Just now</div>
+                                <div class="live-stat-label">Activated</div>
+                            </div>
+                            <div class="live-stat">
+                                <div class="live-stat-value accent">0:22</div>
+                                <div class="live-stat-label">Total Time</div>
+                            </div>
+                            <div class="live-stat">
+                                <div class="live-stat-value green">0</div>
+                                <div class="live-stat-label">Human Steps</div>
+                            </div>
+                        </div>
+
+                        <div class="live-message">"The customer paid and the product was live before they closed the browser tab."</div>
+
+                        <button class="sim-btn" onclick="resetSimulation()">Run Again &#8635;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Before / After -->
 <section class="section">
     <div class="container">
         <div class="section-label">The Problem vs The Solution</div>
-        <div class="section-title">Before & After BYOPG</div>
-        <div class="section-desc">Every partner using a third-party payment system had a completely manual handoff. BYOPG eliminated every human step.</div>
+        <div class="section-title">Before &amp; After</div>
+        <div class="section-desc">Every partner using a third-party payment system had a completely manual handoff. This infrastructure eliminated every human step.</div>
 
         <div class="comparison">
             <div class="comparison-card before">
-                <h3>Before BYOPG</h3>
-                <div class="subtitle">Manual process — 6 steps, 2 systems, human bottleneck</div>
+                <h3>Before</h3>
+                <div class="subtitle">Manual process -- 6 steps, 2 systems, human bottleneck</div>
                 <ul class="step-list">
                     <li><span class="step-num">1</span> Customer pays through partner's payment system <span class="step-time">0 min</span></li>
                     <li><span class="step-num">2</span> Operator manually creates order in the platform <span class="step-time">~15 min</span></li>
@@ -683,21 +1301,20 @@
                         <div class="total-label">Including queue wait time</div>
                     </div>
                     <div style="text-align:right">
-                        <div style="font-size:24px">6</div>
+                        <div style="font-size:24px;color:var(--red)">6</div>
                         <div class="total-label">Manual steps</div>
                     </div>
                 </div>
             </div>
 
             <div class="comparison-card after">
-                <h3>After BYOPG</h3>
-                <div class="subtitle">Automated — webhook to activation, zero human intervention</div>
+                <h3>After</h3>
+                <div class="subtitle">Automated -- webhook to activation, zero human intervention</div>
                 <ul class="step-list">
                     <li><span class="step-num">1</span> Customer pays through partner's payment system <span class="step-time">0 min</span></li>
                     <li><span class="step-num">2</span> Payment webhook fires automatically to the platform <span class="step-time">~2 sec</span></li>
                     <li><span class="step-num">3</span> Invoice auto-matched and marked paid <span class="step-time">~10 sec</span></li>
                     <li><span class="step-num">4</span> AI products activated automatically <span class="step-time">~30 sec</span></li>
-                    <li><span class="step-num" style="background:var(--green-glow);color:var(--green)">&#10003;</span> Customer's product is live — before they close the browser tab <span class="step-time">Done</span></li>
                 </ul>
                 <div class="comparison-footer">
                     <div>
@@ -706,59 +1323,10 @@
                     </div>
                     <div style="text-align:right">
                         <div style="font-size:24px;color:var(--green)">0</div>
-                        <div class="total-label">Manual steps</div>
+                        <div class="total-label">Human steps</div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- Interactive Flow -->
-<section class="flow-section">
-    <div class="container">
-        <div class="section-label">Interactive Demo</div>
-        <div class="section-title">Watch It Happen</div>
-        <div class="section-desc">Click the button to simulate a real BYOPG activation flow.</div>
-
-        <div class="flow-container">
-            <div class="flow-steps">
-                <div class="flow-step" id="fs1">
-                    <div class="flow-icon">&#128179;</div>
-                    <div class="flow-label">Customer Pays</div>
-                    <div class="flow-sublabel">Any webhook-capable gateway</div>
-                </div>
-                <div class="flow-arrow" id="fa1">&rarr;</div>
-                <div class="flow-step" id="fs2">
-                    <div class="flow-icon">&#9889;</div>
-                    <div class="flow-label">Webhook Fires</div>
-                    <div class="flow-sublabel">Automatic trigger</div>
-                </div>
-                <div class="flow-arrow" id="fa2">&rarr;</div>
-                <div class="flow-step" id="fs3">
-                    <div class="flow-icon">&#128196;</div>
-                    <div class="flow-label">Invoice Match</div>
-                    <div class="flow-sublabel">Charge Order action</div>
-                </div>
-                <div class="flow-arrow" id="fa3">&rarr;</div>
-                <div class="flow-step" id="fs4">
-                    <div class="flow-icon">&#128176;</div>
-                    <div class="flow-label">Payment Applied</div>
-                    <div class="flow-sublabel">Pay Invoice action</div>
-                </div>
-                <div class="flow-arrow" id="fa4">&rarr;</div>
-                <div class="flow-step" id="fs5">
-                    <div class="flow-icon">&#129302;</div>
-                    <div class="flow-label">AI Products Live</div>
-                    <div class="flow-sublabel">Auto-activated</div>
-                </div>
-            </div>
-
-            <div class="flow-timer" id="flowTimer">0:00</div>
-            <div class="flow-status" id="flowStatus">Click "Start Payment" to simulate the flow</div>
-
-            <button class="flow-btn" id="startBtn" onclick="startFlow()">Start Payment</button>
-            <button class="flow-btn reset" id="resetBtn" onclick="resetFlow()" style="display:none">Reset</button>
         </div>
     </div>
 </section>
@@ -776,7 +1344,7 @@
                     <div class="partner-flag">&#127482;&#127480;</div>
                     <div>
                         <div class="partner-name">Partner A</div>
-                        <div class="partner-sub">E-Commerce Fulfillment Partner, United States</div>
+                        <div class="partner-sub">US E-Commerce Platform</div>
                     </div>
                 </div>
                 <div class="partner-detail">
@@ -791,14 +1359,6 @@
                     <span class="partner-detail-label">Daily Lead Volume</span>
                     <span class="partner-detail-value">200+</span>
                 </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">CRM Integration</span>
-                    <span class="partner-detail-value">External CRM (one-way sync)</span>
-                </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">Invoice Actions</span>
-                    <span class="partner-detail-value">Send / Pay / Void / Finalize</span>
-                </div>
                 <span class="partner-status status-live">FIRST IMPLEMENTATION - LIVE</span>
             </div>
 
@@ -807,12 +1367,12 @@
                     <div class="partner-flag">&#127487;&#127462;</div>
                     <div>
                         <div class="partner-name">Partner B</div>
-                        <div class="partner-sub">Directory & Marketplace, Multi-Country Enterprise</div>
+                        <div class="partner-sub">Multi-Country Directory Platform</div>
                     </div>
                 </div>
                 <div class="partner-detail">
                     <span class="partner-detail-label">Payment Gateway</span>
-                    <span class="partner-detail-value">Regional Gateway (Local)</span>
+                    <span class="partner-detail-value">Regional Gateway</span>
                 </div>
                 <div class="partner-detail">
                     <span class="partner-detail-label">Subscribers</span>
@@ -826,10 +1386,6 @@
                     <span class="partner-detail-label">End Users</span>
                     <span class="partner-detail-value">20M+</span>
                 </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">AI Pipeline</span>
-                    <span class="partner-detail-value">$12M</span>
-                </div>
                 <span class="partner-status status-requested">REQUESTED - IN PIPELINE</span>
             </div>
 
@@ -838,12 +1394,12 @@
                     <div class="partner-flag">&#127470;&#127481;</div>
                     <div>
                         <div class="partner-name">Partner C</div>
-                        <div class="partner-sub">Largest Digital Media Company, Europe</div>
+                        <div class="partner-sub">European Digital Media Company</div>
                     </div>
                 </div>
                 <div class="partner-detail">
                     <span class="partner-detail-label">Payment Gateway</span>
-                    <span class="partner-detail-value">Stripe (Standard Connect)</span>
+                    <span class="partner-detail-value">Stripe Connect</span>
                 </div>
                 <div class="partner-detail">
                     <span class="partner-detail-label">SMB Advertisers</span>
@@ -854,12 +1410,8 @@
                     <span class="partner-detail-value">700+</span>
                 </div>
                 <div class="partner-detail">
-                    <span class="partner-detail-label">Duda Websites</span>
+                    <span class="partner-detail-label">Managed Websites</span>
                     <span class="partner-detail-value">40,000</span>
-                </div>
-                <div class="partner-detail">
-                    <span class="partner-detail-label">AI Products</span>
-                    <span class="partner-detail-value">AI Chat + AI Voice (localized)</span>
                 </div>
                 <span class="partner-status status-active">WHOLESALE BILLING - ACTIVE</span>
             </div>
@@ -903,7 +1455,7 @@
     <div class="container">
         <div class="section-label">Architecture</div>
         <div class="section-title">The 3 Automation Actions</div>
-        <div class="section-desc">Every BYOPG implementation uses the same 3 actions. No per-partner code.</div>
+        <div class="section-desc">Every implementation uses the same 3 actions. No per-partner code.</div>
 
         <div class="arch-container">
             <div class="arch-flow">
@@ -929,12 +1481,12 @@
                 <div class="arch-arrow-h">&rarr;</div>
                 <div class="arch-block" style="border-color:var(--green)">
                     <h4>Products Live</h4>
-                    <p>AI Chat, Voice, Reputation, Social — active in under 5 minutes</p>
+                    <p>AI Chat, Voice, Reputation, Social -- active in under 5 minutes</p>
                 </div>
             </div>
             <div class="arch-note">
-                This architecture is reusable. The next payment partner takes hours to configure, not weeks to build.<br>
-                The same 3 actions power Partner A, Partner B (Regional Gateway), and Partner C (Stripe).
+                The same 3 actions power Partner A, Partner B, and Partner C.<br>
+                The next payment partner takes hours to configure, not weeks to build.
             </div>
         </div>
     </div>
@@ -950,27 +1502,27 @@
         <div class="pm-grid">
             <div class="pm-card">
                 <h4>Problem Identification</h4>
-                <p>Identified that every partner using a third-party payment system had the same 6-step manual bottleneck. The pattern repeated across Partner A, Partner B, and Partner C — each with different payment gateways but the same activation delay.</p>
+                <p>Identified that every partner using a third-party payment system had the same 6-step manual bottleneck. The pattern repeated across Partner A, Partner B, and Partner C -- each with different payment gateways but the same activation delay.</p>
             </div>
             <div class="pm-card">
                 <h4>Requirements Design</h4>
-                <p>Designed the 3-action automation architecture (Charge Order, Send Invoice, Pay Invoice) that works with ANY webhook-capable payment gateway. Wrote acceptance criteria covering happy path, partial failures, duplicate webhooks, and retry logic.</p>
+                <p>Designed the 3-action automation architecture (Charge Order, Send Invoice, Pay Invoice) that works with any webhook-capable payment gateway. Wrote acceptance criteria covering happy path, partial failures, duplicate webhooks, and retry logic.</p>
             </div>
             <div class="pm-card">
                 <h4>Reusability Principle</h4>
-                <p>Insisted on reusable infrastructure over partner-specific solutions. The first implementation (Partner A) took engineering effort. The second (Partner B) and third (Partner C) plug into the same 3 actions with configuration only — no new code.</p>
+                <p>Insisted on reusable infrastructure over partner-specific solutions. The first implementation (Partner A) took engineering effort. The second (Partner B) and third (Partner C) plug into the same 3 actions with configuration only -- no new code.</p>
             </div>
             <div class="pm-card">
                 <h4>Market Validation</h4>
-                <p>Benchmarked against Amplitude 2025 data: customers reaching first value within 14 days retain at 80%+. BYOPG compressed time-to-first-value from days to minutes — closing the activation gap that drives early churn in SaaS (70% of churn happens in first 90 days).</p>
+                <p>Benchmarked against Amplitude 2025 data: customers reaching first value within 14 days retain at 80%+. This system compressed time-to-first-value from days to minutes -- closing the activation gap that drives early churn (70% of churn happens in first 90 days).</p>
             </div>
             <div class="pm-card">
                 <h4>Cross-Partner Scaling</h4>
-                <p>Validated with 3 partners across 3 continents (US, South Africa, Italy) — each with different payment systems, currencies, tax requirements, and billing models. The architecture handles all of them without per-partner code.</p>
+                <p>Validated with 3 partners across 3 continents (US, South Africa, Italy) -- each with different payment systems, currencies, tax requirements, and billing models. The architecture handles all of them without per-partner code.</p>
             </div>
             <div class="pm-card">
                 <h4>Platform Impact</h4>
-                <p>BYOPG doesn't just serve payment partners. The same webhook-to-activation pattern powers AI product deployment — when a partner's customer pays, their AI Voice Receptionist, AI Chat, or Reputation AI activates automatically. Payment infrastructure becomes AI distribution infrastructure.</p>
+                <p>This infrastructure does not just serve payment partners. The same webhook-to-activation pattern powers AI product deployment -- when a partner's customer pays, their AI Voice Receptionist, AI Chat, or Reputation AI activates automatically. Payment infrastructure becomes AI distribution infrastructure.</p>
             </div>
         </div>
     </div>
@@ -979,88 +1531,263 @@
 <!-- Footer -->
 <div class="footer">
     <div class="container">
-        <p><strong>Designed by Sangeetha K</strong> — Product Manager, Integrations & Professional Services</p>
-        <p style="margin-top:8px"><a href="https://github.com/Sangythek190" target="_blank">GitHub</a> &middot; <a href="https://linkedin.com/in/SangeethaK" target="_blank">LinkedIn</a> &middot; <a href="https://github.com/Sangythek190/ai-data-analyst-portfolio" target="_blank">AI Data Analyst Demo</a></p>
-        <p style="margin-top:16px;font-size:11px;color:#555">Infrastructure serving 650,000+ addressable SMBs across 5 enterprise partner ecosystems spanning 4 continents</p>
+        <p><strong>Designed by Sangeetha K</strong> -- Product Manager</p>
+        <p style="margin-top:8px">
+            <a href="https://github.com/Sangythek190" target="_blank">GitHub</a> &middot;
+            <a href="https://linkedin.com/in/SangeethaK" target="_blank">LinkedIn</a> &middot;
+            <a href="https://github.com/Sangythek190/ai-data-analyst-portfolio" target="_blank">AI Data Analyst Demo</a> &middot;
+            <a href="https://github.com/Sangythek190/churn-framework" target="_blank">Churn Framework</a> &middot;
+            <a href="https://github.com/Sangythek190/ai-safety-guardrails" target="_blank">AI Safety Guardrails</a>
+        </p>
+        <p style="margin-top:16px;font-size:11px;color:#555">Infrastructure serving 650,000+ addressable SMBs across 3 enterprise partner ecosystems spanning 3 continents</p>
     </div>
 </div>
 
 <script>
-let timer = null;
-let seconds = 0;
-const steps = ['fs1','fs2','fs3','fs4','fs5'];
-const arrows = ['fa1','fa2','fa3','fa4'];
-const delays = [0, 1500, 2500, 3500, 5000];
-const statuses = [
-    'Customer initiates payment through partner gateway...',
-    'Webhook received — payment event captured...',
-    'Invoice matched — Charge Order action complete...',
-    'Payment applied — Pay Invoice action triggered...',
-    'AI products activated. Customer is live.'
-];
+(function() {
+    // ========================================
+    // SIMULATION STATE
+    // ========================================
+    let currentScreen = 1;
+    let timerInterval = null;
+    let elapsedMs = 0;
+    let autoAdvanceTimeout = null;
 
-function startFlow() {
-    document.getElementById('startBtn').disabled = true;
-    document.getElementById('flowTimer').className = 'flow-timer running';
-    seconds = 0;
+    const screenLabels = [
+        'Screen 1 of 5 -- Customer Storefront',
+        'Screen 2 of 5 -- Payment Processing',
+        'Screen 3 of 5 -- Automation Pipeline',
+        'Screen 4 of 5 -- Customer Email',
+        'Screen 5 of 5 -- Product Live'
+    ];
 
-    timer = setInterval(() => {
-        seconds++;
-        const min = Math.floor(seconds / 60);
-        const sec = seconds % 60;
-        document.getElementById('flowTimer').textContent =
-            min + ':' + (sec < 10 ? '0' : '') + sec;
-    }, 1000);
+    // ========================================
+    // TIMER
+    // ========================================
+    function startTimer() {
+        if (timerInterval) return;
+        elapsedMs = 0;
+        timerInterval = setInterval(function() {
+            elapsedMs += 100;
+            updateTimerDisplay();
+        }, 100);
+    }
 
-    steps.forEach((s, i) => {
-        setTimeout(() => {
-            // Mark previous as completed
-            if (i > 0) {
-                document.getElementById(steps[i-1]).classList.remove('active');
-                document.getElementById(steps[i-1]).classList.add('completed');
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function updateTimerDisplay() {
+        var totalSec = Math.floor(elapsedMs / 1000);
+        var min = Math.floor(totalSec / 60);
+        var sec = totalSec % 60;
+        var el = document.getElementById('simTimer');
+        el.textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    // ========================================
+    // SCREEN NAVIGATION
+    // ========================================
+    function showScreen(n) {
+        for (var i = 1; i <= 5; i++) {
+            var s = document.getElementById('screen' + i);
+            s.classList.remove('active');
+        }
+        document.getElementById('screen' + n).classList.add('active');
+
+        // Update dots
+        for (var i = 0; i < 5; i++) {
+            var dot = document.getElementById('dot' + i);
+            dot.classList.remove('active', 'completed');
+            if (i < n - 1) {
+                dot.classList.add('completed');
+            } else if (i === n - 1) {
+                dot.classList.add('active');
             }
-            // Activate current
-            document.getElementById(s).classList.add('active');
-            document.getElementById('flowStatus').textContent = statuses[i];
+        }
 
-            // Activate arrow before this step
-            if (i > 0) {
-                document.getElementById(arrows[i-1]).classList.add('active');
-            }
+        // Update label
+        document.getElementById('simLabel').textContent = screenLabels[n - 1];
+        currentScreen = n;
+    }
 
-            // Final step
-            if (i === steps.length - 1) {
-                setTimeout(() => {
-                    document.getElementById(s).classList.remove('active');
-                    document.getElementById(s).classList.add('completed');
-                    clearInterval(timer);
-                    document.getElementById('flowTimer').className = 'flow-timer done';
-                    document.getElementById('flowTimer').textContent = '0:05';
-                    document.getElementById('flowStatus').textContent =
-                        'Complete. Customer\'s AI products are live. Zero human intervention.';
-                    document.getElementById('resetBtn').style.display = 'inline-block';
-                }, 1500);
-            }
-        }, delays[i]);
-    });
-}
+    // ========================================
+    // SCREEN 2: Payment Processing
+    // ========================================
+    function runPaymentScreen() {
+        var spinner = document.getElementById('paySpinner');
+        var status = document.getElementById('payStatus');
+        var webhook = document.getElementById('payWebhook');
 
-function resetFlow() {
-    clearInterval(timer);
-    seconds = 0;
-    document.getElementById('flowTimer').textContent = '0:00';
-    document.getElementById('flowTimer').className = 'flow-timer';
-    document.getElementById('flowStatus').textContent = 'Click "Start Payment" to simulate the flow';
-    document.getElementById('startBtn').disabled = false;
-    document.getElementById('resetBtn').style.display = 'none';
+        spinner.style.display = 'block';
+        status.textContent = 'Processing payment...';
+        status.classList.remove('success');
+        webhook.classList.remove('show');
 
-    steps.forEach(s => {
-        document.getElementById(s).classList.remove('active', 'completed');
-    });
-    arrows.forEach(a => {
-        document.getElementById(a).classList.remove('active');
-    });
-}
+        // After 1.5s: Payment Accepted
+        setTimeout(function() {
+            spinner.style.display = 'none';
+            status.innerHTML = '&#10003; Payment Accepted';
+            status.classList.add('success');
+        }, 1500);
+
+        // After 2s: Webhook message
+        setTimeout(function() {
+            webhook.classList.add('show');
+        }, 2000);
+
+        // After 3s: Auto-advance
+        autoAdvanceTimeout = setTimeout(function() {
+            showScreen(3);
+            runPipelineScreen();
+        }, 3000);
+    }
+
+    // ========================================
+    // SCREEN 3: Automation Pipeline
+    // ========================================
+    function runPipelineScreen() {
+        var logLines = [];
+        for (var i = 0; i <= 7; i++) {
+            logLines.push(document.getElementById('log' + i));
+            document.getElementById('log' + i).classList.remove('visible');
+        }
+
+        // Reset action cards
+        var actions = ['pAction1', 'pAction2', 'pAction3'];
+        var arrows = ['pArrow1', 'pArrow2'];
+        actions.forEach(function(id) {
+            var el = document.getElementById(id);
+            el.classList.remove('visible', 'highlight');
+        });
+        arrows.forEach(function(id) {
+            document.getElementById(id).classList.remove('visible');
+        });
+
+        // Show log lines one by one
+        var lineDelay = 600;
+        logLines.forEach(function(line, idx) {
+            setTimeout(function() {
+                line.classList.add('visible');
+
+                // After line 1 (Charge Order), highlight action 1
+                if (idx === 1) {
+                    document.getElementById('pAction1').classList.add('visible');
+                }
+                // After line 3 (Send Invoice), show arrow + action 2
+                if (idx === 3) {
+                    document.getElementById('pArrow1').classList.add('visible');
+                    document.getElementById('pAction2').classList.add('visible');
+                }
+                // After line 4 (Pay Invoice), show arrow + action 3
+                if (idx === 4) {
+                    document.getElementById('pArrow2').classList.add('visible');
+                    document.getElementById('pAction3').classList.add('visible');
+                }
+                // After line 7 (ACTIVE), highlight all actions
+                if (idx === 7) {
+                    actions.forEach(function(aId) {
+                        document.getElementById(aId).classList.add('highlight');
+                    });
+                }
+            }, lineDelay * (idx + 1));
+        });
+
+        // Auto-advance after all lines + buffer
+        var totalTime = lineDelay * 9 + 1000;
+        autoAdvanceTimeout = setTimeout(function() {
+            showScreen(4);
+            runEmailScreen();
+        }, totalTime);
+    }
+
+    // ========================================
+    // SCREEN 4: Customer Email
+    // ========================================
+    function runEmailScreen() {
+        autoAdvanceTimeout = setTimeout(function() {
+            showScreen(5);
+            runLiveScreen();
+        }, 3000);
+    }
+
+    // ========================================
+    // SCREEN 5: Product Live
+    // ========================================
+    function runLiveScreen() {
+        stopTimer();
+        var timerEl = document.getElementById('simTimer');
+        timerEl.textContent = '0:22';
+        timerEl.classList.add('done');
+
+        // Mark all dots completed, last one active
+        for (var i = 0; i < 5; i++) {
+            var dot = document.getElementById('dot' + i);
+            dot.classList.remove('active');
+            dot.classList.add('completed');
+        }
+        document.getElementById('dot4').classList.remove('completed');
+        document.getElementById('dot4').classList.add('active');
+    }
+
+    // ========================================
+    // ADVANCE (called by Pay Now button)
+    // ========================================
+    window.advanceToScreen = function(n) {
+        startTimer();
+        showScreen(n);
+        if (n === 2) {
+            runPaymentScreen();
+        }
+    };
+
+    // ========================================
+    // RESET
+    // ========================================
+    window.resetSimulation = function() {
+        // Clear any pending auto-advance
+        if (autoAdvanceTimeout) {
+            clearTimeout(autoAdvanceTimeout);
+            autoAdvanceTimeout = null;
+        }
+        stopTimer();
+        elapsedMs = 0;
+
+        // Reset timer display
+        var timerEl = document.getElementById('simTimer');
+        timerEl.textContent = '0:00';
+        timerEl.classList.remove('done');
+
+        // Reset payment screen elements
+        var spinner = document.getElementById('paySpinner');
+        var status = document.getElementById('payStatus');
+        var webhook = document.getElementById('payWebhook');
+        spinner.style.display = 'block';
+        status.textContent = 'Processing payment...';
+        status.classList.remove('success');
+        webhook.classList.remove('show');
+
+        // Reset pipeline log lines
+        for (var i = 0; i <= 7; i++) {
+            document.getElementById('log' + i).classList.remove('visible');
+        }
+
+        // Reset pipeline actions
+        ['pAction1', 'pAction2', 'pAction3'].forEach(function(id) {
+            var el = document.getElementById(id);
+            el.classList.remove('visible', 'highlight');
+        });
+        ['pArrow1', 'pArrow2'].forEach(function(id) {
+            document.getElementById(id).classList.remove('visible');
+        });
+
+        // Show screen 1
+        showScreen(1);
+    };
+})();
 </script>
 
 </body>
