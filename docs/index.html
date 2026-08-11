@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BYOPG — Zero-Touch Payment Infrastructure</title>
+    <style>
+        :root {
+            --bg: #0a0a1a;
+            --surface: rgba(255,255,255,0.04);
+            --surface-hover: rgba(255,255,255,0.08);
+            --glass: rgba(255,255,255,0.06);
+            --glass-border: rgba(255,255,255,0.1);
+            --text: #e4e4ef;
+            --text-muted: #8888a4;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --green: #22c55e;
+            --green-glow: rgba(34,197,94,0.15);
+            --red: #ef4444;
+            --red-glow: rgba(239,68,68,0.12);
+            --yellow: #eab308;
+            --yellow-glow: rgba(234,179,8,0.12);
+            --blue: #3b82f6;
+            --blue-glow: rgba(59,130,246,0.15);
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+            --gradient-3: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Background grid effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 0 60px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--accent-light);
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 640px;
+            margin: 0 auto 32px;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-top: 40px;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--green);
+        }
+
+        .hero-stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Section */
+        .section {
+            padding: 60px 0;
+        }
+
+        .section-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-light);
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .section-desc {
+            color: var(--text-muted);
+            font-size: 16px;
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        /* Before/After */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-top: 40px;
+        }
+
+        .comparison-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 32px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comparison-card.before {
+            border-color: rgba(239,68,68,0.2);
+        }
+
+        .comparison-card.before::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--red);
+        }
+
+        .comparison-card.after {
+            border-color: rgba(34,197,94,0.2);
+        }
+
+        .comparison-card.after::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--green);
+        }
+
+        .comparison-card h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .step-list {
+            list-style: none;
+        }
+
+        .step-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 14px;
+        }
+
+        .step-list li:last-child { border-bottom: none; }
+
+        .step-num {
+            min-width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .before .step-num {
+            background: var(--red-glow);
+            color: var(--red);
+        }
+
+        .after .step-num {
+            background: var(--green-glow);
+            color: var(--green);
+        }
+
+        .step-time {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .comparison-footer {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .comparison-footer .total-time {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .before .total-time { color: var(--red); }
+        .after .total-time { color: var(--green); }
+
+        .comparison-footer .total-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Interactive Flow */
+        .flow-section {
+            padding: 60px 0;
+        }
+
+        .flow-container {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 48px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.3;
+            transition: all 0.5s ease;
+            min-width: 140px;
+        }
+
+        .flow-step.active {
+            opacity: 1;
+        }
+
+        .flow-step.completed .flow-icon {
+            background: var(--green-glow);
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .flow-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            border: 2px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: var(--surface);
+            transition: all 0.5s ease;
+        }
+
+        .flow-step.active .flow-icon {
+            border-color: var(--accent);
+            background: rgba(99,102,241,0.15);
+            box-shadow: 0 0 30px rgba(99,102,241,0.2);
+        }
+
+        .flow-label {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .flow-sublabel {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .flow-arrow {
+            font-size: 20px;
+            color: var(--text-muted);
+            margin: 0 8px;
+            opacity: 0.3;
+            transition: all 0.5s ease;
+        }
+
+        .flow-arrow.active {
+            opacity: 1;
+            color: var(--green);
+        }
+
+        .flow-timer {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 24px 0 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .flow-timer.running {
+            color: var(--accent-light);
+        }
+
+        .flow-timer.done {
+            color: var(--green);
+        }
+
+        .flow-status {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            min-height: 20px;
+        }
+
+        .flow-btn {
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .flow-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99,102,241,0.3);
+        }
+
+        .flow-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .flow-btn.reset {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            margin-left: 12px;
+        }
+
+        /* Partner Cards */
+        .partner-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .partner-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .partner-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .partner-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .partner-flag {
+            font-size: 28px;
+        }
+
+        .partner-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .partner-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .partner-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
+        }
+
+        .partner-detail:last-child { border-bottom: none; }
+
+        .partner-detail-label { color: var(--text-muted); }
+
+        .partner-detail-value { font-weight: 600; }
+
+        .partner-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 16px;
+        }
+
+        .status-live {
+            background: var(--green-glow);
+            color: var(--green);
+        }
+
+        .status-requested {
+            background: var(--yellow-glow);
+            color: var(--yellow);
+        }
+
+        .status-active {
+            background: var(--blue-glow);
+            color: var(--blue);
+        }
+
+        /* Impact Metrics */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .impact-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .impact-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .impact-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .impact-benchmark {
+            font-size: 11px;
+            color: var(--accent-light);
+            margin-top: 8px;
+        }
+
+        /* Architecture */
+        .arch-container {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 48px;
+            margin-top: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .arch-flow {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 16px;
+            margin: 32px 0;
+        }
+
+        .arch-block {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .arch-block h4 {
+            font-size: 14px;
+            color: var(--accent-light);
+            margin-bottom: 8px;
+        }
+
+        .arch-block p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .arch-arrow-h {
+            display: flex;
+            align-items: center;
+            color: var(--green);
+            font-size: 20px;
+        }
+
+        .arch-note {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        /* PM Work */
+        .pm-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .pm-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .pm-card h4 {
+            font-size: 14px;
+            color: var(--accent-light);
+            margin-bottom: 8px;
+        }
+
+        .pm-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 60px 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+            .hero-stats { flex-direction: column; gap: 20px; }
+            .comparison { grid-template-columns: 1fr; }
+            .partner-grid { grid-template-columns: 1fr; }
+            .impact-grid { grid-template-columns: repeat(2, 1fr); }
+            .flow-steps { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); }
+            .arch-flow { flex-direction: column; align-items: center; }
+            .arch-arrow-h { transform: rotate(90deg); }
+            .pm-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-badge">Product Manager Portfolio — Infrastructure Design</div>
+        <h1>Zero-Touch Payment<br>Infrastructure</h1>
+        <p>How I designed a reusable payment automation system that compressed partner onboarding from 24 hours to under 5 minutes — serving 3 partners across 3 continents with zero per-partner code.</p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-value">24h &rarr; 5min</div>
+                <div class="hero-stat-label">Activation Time</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">6 &rarr; 0</div>
+                <div class="hero-stat-label">Manual Steps</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">3</div>
+                <div class="hero-stat-label">Payment Partners Live</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">650K+</div>
+                <div class="hero-stat-label">Addressable SMBs</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Before / After -->
+<section class="section">
+    <div class="container">
+        <div class="section-label">The Problem vs The Solution</div>
+        <div class="section-title">Before & After BYOPG</div>
+        <div class="section-desc">Every partner using a third-party payment system had a completely manual handoff. BYOPG eliminated every human step.</div>
+
+        <div class="comparison">
+            <div class="comparison-card before">
+                <h3>Before BYOPG</h3>
+                <div class="subtitle">Manual process — 6 steps, 2 systems, human bottleneck</div>
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Customer pays through partner's payment system <span class="step-time">0 min</span></li>
+                    <li><span class="step-num">2</span> Operator manually creates order in the platform <span class="step-time">~15 min</span></li>
+                    <li><span class="step-num">3</span> Operator manually matches the invoice <span class="step-time">~10 min</span></li>
+                    <li><span class="step-num">4</span> Operator manually marks invoice as paid <span class="step-time">~5 min</span></li>
+                    <li><span class="step-num">5</span> Operator manually activates products <span class="step-time">~10 min</span></li>
+                    <li><span class="step-num">6</span> Operator confirms back to customer <span class="step-time">~5 min</span></li>
+                </ul>
+                <div class="comparison-footer">
+                    <div>
+                        <div class="total-time">Up to 24 hours</div>
+                        <div class="total-label">Including queue wait time</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-size:24px">6</div>
+                        <div class="total-label">Manual steps</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-card after">
+                <h3>After BYOPG</h3>
+                <div class="subtitle">Automated — webhook to activation, zero human intervention</div>
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Customer pays through partner's payment system <span class="step-time">0 min</span></li>
+                    <li><span class="step-num">2</span> Payment webhook fires automatically to the platform <span class="step-time">~2 sec</span></li>
+                    <li><span class="step-num">3</span> Invoice auto-matched and marked paid <span class="step-time">~10 sec</span></li>
+                    <li><span class="step-num">4</span> AI products activated automatically <span class="step-time">~30 sec</span></li>
+                    <li><span class="step-num" style="background:var(--green-glow);color:var(--green)">&#10003;</span> Customer's product is live — before they close the browser tab <span class="step-time">Done</span></li>
+                </ul>
+                <div class="comparison-footer">
+                    <div>
+                        <div class="total-time">Under 5 minutes</div>
+                        <div class="total-label">End to end, fully automated</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-size:24px;color:var(--green)">0</div>
+                        <div class="total-label">Manual steps</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive Flow -->
+<section class="flow-section">
+    <div class="container">
+        <div class="section-label">Interactive Demo</div>
+        <div class="section-title">Watch It Happen</div>
+        <div class="section-desc">Click the button to simulate a real BYOPG activation flow.</div>
+
+        <div class="flow-container">
+            <div class="flow-steps">
+                <div class="flow-step" id="fs1">
+                    <div class="flow-icon">&#128179;</div>
+                    <div class="flow-label">Customer Pays</div>
+                    <div class="flow-sublabel">Any webhook-capable gateway</div>
+                </div>
+                <div class="flow-arrow" id="fa1">&rarr;</div>
+                <div class="flow-step" id="fs2">
+                    <div class="flow-icon">&#9889;</div>
+                    <div class="flow-label">Webhook Fires</div>
+                    <div class="flow-sublabel">Automatic trigger</div>
+                </div>
+                <div class="flow-arrow" id="fa2">&rarr;</div>
+                <div class="flow-step" id="fs3">
+                    <div class="flow-icon">&#128196;</div>
+                    <div class="flow-label">Invoice Match</div>
+                    <div class="flow-sublabel">Charge Order action</div>
+                </div>
+                <div class="flow-arrow" id="fa3">&rarr;</div>
+                <div class="flow-step" id="fs4">
+                    <div class="flow-icon">&#128176;</div>
+                    <div class="flow-label">Payment Applied</div>
+                    <div class="flow-sublabel">Pay Invoice action</div>
+                </div>
+                <div class="flow-arrow" id="fa4">&rarr;</div>
+                <div class="flow-step" id="fs5">
+                    <div class="flow-icon">&#129302;</div>
+                    <div class="flow-label">AI Products Live</div>
+                    <div class="flow-sublabel">Auto-activated</div>
+                </div>
+            </div>
+
+            <div class="flow-timer" id="flowTimer">0:00</div>
+            <div class="flow-status" id="flowStatus">Click "Start Payment" to simulate the flow</div>
+
+            <button class="flow-btn" id="startBtn" onclick="startFlow()">Start Payment</button>
+            <button class="flow-btn reset" id="resetBtn" onclick="resetFlow()" style="display:none">Reset</button>
+        </div>
+    </div>
+</section>
+
+<!-- Partner Cards -->
+<section class="section">
+    <div class="container">
+        <div class="section-label">Reusable Infrastructure</div>
+        <div class="section-title">3 Partners, 3 Continents, 1 Architecture</div>
+        <div class="section-desc">Every new payment partner plugs into the same 3 automation actions. Zero per-partner code.</div>
+
+        <div class="partner-grid">
+            <div class="partner-card">
+                <div class="partner-header">
+                    <div class="partner-flag">&#127482;&#127480;</div>
+                    <div>
+                        <div class="partner-name">Partner A</div>
+                        <div class="partner-sub">E-Commerce Fulfillment Partner, United States</div>
+                    </div>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">Payment Gateway</span>
+                    <span class="partner-detail-value">Third-Party Gateway</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">SMBs Served</span>
+                    <span class="partner-detail-value">10,000+</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">Daily Lead Volume</span>
+                    <span class="partner-detail-value">200+</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">CRM Integration</span>
+                    <span class="partner-detail-value">External CRM (one-way sync)</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">Invoice Actions</span>
+                    <span class="partner-detail-value">Send / Pay / Void / Finalize</span>
+                </div>
+                <span class="partner-status status-live">FIRST IMPLEMENTATION - LIVE</span>
+            </div>
+
+            <div class="partner-card">
+                <div class="partner-header">
+                    <div class="partner-flag">&#127487;&#127462;</div>
+                    <div>
+                        <div class="partner-name">Partner B</div>
+                        <div class="partner-sub">Directory & Marketplace, Multi-Country Enterprise</div>
+                    </div>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">Payment Gateway</span>
+                    <span class="partner-detail-value">Regional Gateway (Local)</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">Subscribers</span>
+                    <span class="partner-detail-value">500,000+</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">Regional Directories</span>
+                    <span class="partner-detail-value">19</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">End Users</span>
+                    <span class="partner-detail-value">20M+</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">AI Pipeline</span>
+                    <span class="partner-detail-value">$12M</span>
+                </div>
+                <span class="partner-status status-requested">REQUESTED - IN PIPELINE</span>
+            </div>
+
+            <div class="partner-card">
+                <div class="partner-header">
+                    <div class="partner-flag">&#127470;&#127481;</div>
+                    <div>
+                        <div class="partner-name">Partner C</div>
+                        <div class="partner-sub">Largest Digital Media Company, Europe</div>
+                    </div>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">Payment Gateway</span>
+                    <span class="partner-detail-value">Stripe (Standard Connect)</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">SMB Advertisers</span>
+                    <span class="partner-detail-value">130,000</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">Sales Agents</span>
+                    <span class="partner-detail-value">700+</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">Duda Websites</span>
+                    <span class="partner-detail-value">40,000</span>
+                </div>
+                <div class="partner-detail">
+                    <span class="partner-detail-label">AI Products</span>
+                    <span class="partner-detail-value">AI Chat + AI Voice (localized)</span>
+                </div>
+                <span class="partner-status status-active">WHOLESALE BILLING - ACTIVE</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Impact -->
+<section class="section">
+    <div class="container">
+        <div class="section-label">Business Impact</div>
+        <div class="section-title">Measurable Results</div>
+
+        <div class="impact-grid">
+            <div class="impact-card">
+                <div class="impact-value" style="color:var(--green)">80%+</div>
+                <div class="impact-label">Month-12 retention when first value delivered in 14 days</div>
+                <div class="impact-benchmark">Amplitude 2025 Benchmark</div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-value" style="color:var(--red)">35-50%</div>
+                <div class="impact-label">Month-12 retention when first value takes 30+ days</div>
+                <div class="impact-benchmark">Amplitude 2025 Benchmark</div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-value" style="color:var(--accent-light)">3</div>
+                <div class="impact-label">Reusable automation actions powering all partners</div>
+                <div class="impact-benchmark">Charge Order + Send Invoice + Pay Invoice</div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-value" style="color:var(--yellow)">0</div>
+                <div class="impact-label">Per-partner custom code required for new integrations</div>
+                <div class="impact-benchmark">Plug into existing actions</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Architecture -->
+<section class="section">
+    <div class="container">
+        <div class="section-label">Architecture</div>
+        <div class="section-title">The 3 Automation Actions</div>
+        <div class="section-desc">Every BYOPG implementation uses the same 3 actions. No per-partner code.</div>
+
+        <div class="arch-container">
+            <div class="arch-flow">
+                <div class="arch-block">
+                    <h4>Partner Payment</h4>
+                    <p>Third-Party Gateway<br>Regional Gateway<br>Stripe Connect<br>(any webhook-capable gateway)</p>
+                </div>
+                <div class="arch-arrow-h">&rarr;</div>
+                <div class="arch-block" style="border-color:var(--accent)">
+                    <h4>Charge Order</h4>
+                    <p>Creates or matches the order in the platform from the webhook payload</p>
+                </div>
+                <div class="arch-arrow-h">&rarr;</div>
+                <div class="arch-block" style="border-color:var(--accent)">
+                    <h4>Send Invoice</h4>
+                    <p>Generates and sends the invoice, matching to the correct customer</p>
+                </div>
+                <div class="arch-arrow-h">&rarr;</div>
+                <div class="arch-block" style="border-color:var(--accent)">
+                    <h4>Pay Invoice</h4>
+                    <p>Marks invoice paid and triggers product activation including AI products</p>
+                </div>
+                <div class="arch-arrow-h">&rarr;</div>
+                <div class="arch-block" style="border-color:var(--green)">
+                    <h4>Products Live</h4>
+                    <p>AI Chat, Voice, Reputation, Social — active in under 5 minutes</p>
+                </div>
+            </div>
+            <div class="arch-note">
+                This architecture is reusable. The next payment partner takes hours to configure, not weeks to build.<br>
+                The same 3 actions power Partner A, Partner B (Regional Gateway), and Partner C (Stripe).
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PM Work -->
+<section class="section">
+    <div class="container">
+        <div class="section-label">Product Manager Work</div>
+        <div class="section-title">What I Did</div>
+        <div class="section-desc">The PM thinking behind this infrastructure.</div>
+
+        <div class="pm-grid">
+            <div class="pm-card">
+                <h4>Problem Identification</h4>
+                <p>Identified that every partner using a third-party payment system had the same 6-step manual bottleneck. The pattern repeated across Partner A, Partner B, and Partner C — each with different payment gateways but the same activation delay.</p>
+            </div>
+            <div class="pm-card">
+                <h4>Requirements Design</h4>
+                <p>Designed the 3-action automation architecture (Charge Order, Send Invoice, Pay Invoice) that works with ANY webhook-capable payment gateway. Wrote acceptance criteria covering happy path, partial failures, duplicate webhooks, and retry logic.</p>
+            </div>
+            <div class="pm-card">
+                <h4>Reusability Principle</h4>
+                <p>Insisted on reusable infrastructure over partner-specific solutions. The first implementation (Partner A) took engineering effort. The second (Partner B) and third (Partner C) plug into the same 3 actions with configuration only — no new code.</p>
+            </div>
+            <div class="pm-card">
+                <h4>Market Validation</h4>
+                <p>Benchmarked against Amplitude 2025 data: customers reaching first value within 14 days retain at 80%+. BYOPG compressed time-to-first-value from days to minutes — closing the activation gap that drives early churn in SaaS (70% of churn happens in first 90 days).</p>
+            </div>
+            <div class="pm-card">
+                <h4>Cross-Partner Scaling</h4>
+                <p>Validated with 3 partners across 3 continents (US, South Africa, Italy) — each with different payment systems, currencies, tax requirements, and billing models. The architecture handles all of them without per-partner code.</p>
+            </div>
+            <div class="pm-card">
+                <h4>Platform Impact</h4>
+                <p>BYOPG doesn't just serve payment partners. The same webhook-to-activation pattern powers AI product deployment — when a partner's customer pays, their AI Voice Receptionist, AI Chat, or Reputation AI activates automatically. Payment infrastructure becomes AI distribution infrastructure.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+    <div class="container">
+        <p><strong>Designed by Sangeetha K</strong> — Product Manager, Integrations & Professional Services</p>
+        <p style="margin-top:8px"><a href="https://github.com/Sangythek190" target="_blank">GitHub</a> &middot; <a href="https://linkedin.com/in/SangeethaK" target="_blank">LinkedIn</a> &middot; <a href="https://github.com/Sangythek190/ai-data-analyst-portfolio" target="_blank">AI Data Analyst Demo</a></p>
+        <p style="margin-top:16px;font-size:11px;color:#555">Infrastructure serving 650,000+ addressable SMBs across 5 enterprise partner ecosystems spanning 4 continents</p>
+    </div>
+</div>
+
+<script>
+let timer = null;
+let seconds = 0;
+const steps = ['fs1','fs2','fs3','fs4','fs5'];
+const arrows = ['fa1','fa2','fa3','fa4'];
+const delays = [0, 1500, 2500, 3500, 5000];
+const statuses = [
+    'Customer initiates payment through partner gateway...',
+    'Webhook received — payment event captured...',
+    'Invoice matched — Charge Order action complete...',
+    'Payment applied — Pay Invoice action triggered...',
+    'AI products activated. Customer is live.'
+];
+
+function startFlow() {
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('flowTimer').className = 'flow-timer running';
+    seconds = 0;
+
+    timer = setInterval(() => {
+        seconds++;
+        const min = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+        document.getElementById('flowTimer').textContent =
+            min + ':' + (sec < 10 ? '0' : '') + sec;
+    }, 1000);
+
+    steps.forEach((s, i) => {
+        setTimeout(() => {
+            // Mark previous as completed
+            if (i > 0) {
+                document.getElementById(steps[i-1]).classList.remove('active');
+                document.getElementById(steps[i-1]).classList.add('completed');
+            }
+            // Activate current
+            document.getElementById(s).classList.add('active');
+            document.getElementById('flowStatus').textContent = statuses[i];
+
+            // Activate arrow before this step
+            if (i > 0) {
+                document.getElementById(arrows[i-1]).classList.add('active');
+            }
+
+            // Final step
+            if (i === steps.length - 1) {
+                setTimeout(() => {
+                    document.getElementById(s).classList.remove('active');
+                    document.getElementById(s).classList.add('completed');
+                    clearInterval(timer);
+                    document.getElementById('flowTimer').className = 'flow-timer done';
+                    document.getElementById('flowTimer').textContent = '0:05';
+                    document.getElementById('flowStatus').textContent =
+                        'Complete. Customer\'s AI products are live. Zero human intervention.';
+                    document.getElementById('resetBtn').style.display = 'inline-block';
+                }, 1500);
+            }
+        }, delays[i]);
+    });
+}
+
+function resetFlow() {
+    clearInterval(timer);
+    seconds = 0;
+    document.getElementById('flowTimer').textContent = '0:00';
+    document.getElementById('flowTimer').className = 'flow-timer';
+    document.getElementById('flowStatus').textContent = 'Click "Start Payment" to simulate the flow';
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('resetBtn').style.display = 'none';
+
+    steps.forEach(s => {
+        document.getElementById(s).classList.remove('active', 'completed');
+    });
+    arrows.forEach(a => {
+        document.getElementById(a).classList.remove('active');
+    });
+}
+</script>
+
+</body>
+</html>
