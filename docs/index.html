@@ -1757,7 +1757,7 @@
             setTimeout(function() {
                 var testing = document.getElementById('conn-testing');
                 if (testing) testing.classList.add('visible');
-            }, 1000);
+            }, 2000);
 
             setTimeout(function() {
                 var stat = document.getElementById('conn-stat');
@@ -1770,7 +1770,7 @@
                     testing.textContent = 'Connection verified \u2713';
                     testing.style.color = '#22c55e';
                 }
-            }, 3000);
+            }, 5000);
 
             setTimeout(function() {
                 var btn = document.getElementById('btn-configure');
@@ -1778,7 +1778,7 @@
                     btn.style.display = 'inline-flex';
                     requestAnimationFrame(function() { btn.style.opacity = '1'; btn.style.transition = 'opacity 0.4s'; });
                 }
-            }, 4000);
+            }, 6500);
         }
 
         function screen1_3() {
@@ -1802,7 +1802,7 @@
                 '</div>'
             );
 
-            setTimeout(function() { goToScreen(3); }, 4000);
+            setTimeout(function() { goToScreen(3); }, 6000);
         }
 
         function screen2_1() {
@@ -1835,7 +1835,7 @@
                 '</div>'
             );
 
-            // Animate cards in with 1.5s delays
+            // Animate cards in with 2.5s delays — slow enough to read each one
             var ids = ['ac-trigger', 'ac-1', 'ac-2', 'ac-3'];
             var conns = ['ac-conn-1', 'ac-conn-2', 'ac-conn-3'];
             ids.forEach(function(id, i) {
@@ -1846,7 +1846,7 @@
                         var c = document.getElementById(conns[i-1]);
                         if (c) c.classList.add('visible');
                     }
-                }, i * 1500);
+                }, i * 2500);
             });
 
             setTimeout(function() {
@@ -1854,7 +1854,7 @@
                 if (note) { note.style.transition = 'opacity 0.5s'; note.style.opacity = '1'; }
                 var btn = document.getElementById('btn-activate');
                 if (btn) { btn.style.display = 'inline-flex'; requestAnimationFrame(function() { btn.style.transition = 'opacity 0.4s'; btn.style.opacity = '1'; }); }
-            }, 6500);
+            }, 11000);
         }
 
         function screen2_2() {
@@ -1875,7 +1875,7 @@
                 '</div>'
             );
 
-            setTimeout(function() { goToScreen(5); }, 4000);
+            setTimeout(function() { goToScreen(5); }, 6000);
         }
 
         function screen3_1() {
@@ -1925,15 +1925,15 @@
                 '</div>'
             );
 
-            // After 3s: payment accepted
+            // After 4s: payment accepted
             setTimeout(function() {
                 var spinner = document.getElementById('pay-spinner');
                 if (spinner) spinner.style.display = 'none';
                 var s1 = document.getElementById('pay-status-1');
                 if (s1) { s1.classList.add('visible'); s1.classList.add('success'); }
-            }, 3000);
+            }, 4000);
 
-            // After 5s: label changes to system, webhook message
+            // After 7s: label changes to system, webhook message
             setTimeout(function() {
                 var label = document.getElementById('payment-label');
                 if (label) {
@@ -1946,10 +1946,10 @@
                 }
                 var s2 = document.getElementById('pay-status-2');
                 if (s2) { s2.classList.add('visible'); s2.classList.add('webhook'); }
-            }, 5000);
+            }, 7000);
 
-            // Auto-advance at 7s
-            setTimeout(function() { goToScreen(7); }, 7000);
+            // Auto-advance at 10s
+            setTimeout(function() { goToScreen(7); }, 10000);
         }
 
         function screen3_3() {
@@ -2002,18 +2002,18 @@
                     if (i === 1) { var c = document.getElementById('pa-1'); if (c) c.classList.add('lit'); }
                     if (i === 3) { var c = document.getElementById('pa-2'); if (c) c.classList.add('lit'); }
                     if (i === 4) { var c = document.getElementById('pa-3'); if (c) c.classList.add('lit'); }
-                }, i * 1200);
+                }, i * 1800);
             });
 
-            var totalLineTime = lines.length * 1200;
+            var totalLineTime = lines.length * 1800;
 
             setTimeout(function() {
                 var lbl = document.getElementById('pipeline-label');
                 if (lbl) { lbl.style.transition = 'opacity 0.5s'; lbl.style.opacity = '1'; }
             }, totalLineTime);
 
-            // Auto-advance: total line time + 3s buffer
-            setTimeout(function() { goToScreen(8); }, totalLineTime + 3000);
+            // Auto-advance: total line time + 4s buffer to read
+            setTimeout(function() { goToScreen(8); }, totalLineTime + 4000);
         }
 
         function screen3_4() {
@@ -2042,7 +2042,7 @@
                 '</div>'
             );
 
-            setTimeout(function() { goToScreen(9); }, 5000);
+            setTimeout(function() { goToScreen(9); }, 7000);
         }
 
         function screen3_5() {
