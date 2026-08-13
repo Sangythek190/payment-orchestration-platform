@@ -14,6 +14,15 @@ A Product Manager portfolio project demonstrating how I designed a reusable paym
 - **Platform Thinking** — One architecture serving multiple payment gateways, currencies, and billing models
 - **Market Validation** — Benchmarked against Amplitude 2025 retention data (time-to-first-value under 14 days = 80%+ month-12 retention)
 
+## Northstar Billing Data — Per-Partner Context
+
+| Partner | Paying SMBs | Vendasta Billing | Context |
+|---------|-------------|-----------------|---------|
+| Zoek | 1,879 | $73K | Revenue contracting — BYOPG is the retention lever that keeps activation friction near zero |
+| Telkom | 833 | $62K vendasta billing | $5.7M total monthly revenue — massive scale, PayFast integration unlocks automated billing |
+| Italia Online | 2,480 vendasta paying | $32K vendasta billing | Stripe Connect active — BYOPG automation is the next layer |
+| Kaseya | 2,137 | $188K | 260% revenue growth — BYOPG success proof: zero-friction billing drives expansion |
+
 ## Architecture
 
 ```
