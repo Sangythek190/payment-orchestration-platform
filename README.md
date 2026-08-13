@@ -1,46 +1,103 @@
-# BYOPG — Zero-Touch Payment Infrastructure
+# Payment Orchestration Platform
 
-A Product Manager portfolio project demonstrating how I designed a reusable payment automation system that compressed partner onboarding from 24 hours to under 5 minutes.
+**Bring Your Own Payment Gateway** — plug in any payment gateway, automate payment workflows, and manage everything through one unified interface.
+
+## What Is This?
+
+A payment orchestration platform that lets you connect the payment gateway you already use — Stripe, PayPal, Razorpay, Adyen, Square, PayFast, or any other — and orchestrate payment automation without switching providers or writing per-gateway code.
+
+**The core idea:** You bring the gateway. We handle the orchestration.
+
+## Why Payment Orchestration?
+
+| Problem | Without Orchestration | With This Platform |
+|---------|----------------------|-------------------|
+| Adding a new gateway | Weeks of custom integration code | Plug in credentials, go live |
+| Multi-gateway routing | Manual, error-prone switching | Automated routing rules |
+| Partner onboarding | 24 hours, 6 manual steps | Under 5 minutes, zero human steps |
+| Currency/region handling | Per-gateway logic sprawl | Unified rules engine |
+| Failover | Downtime when a gateway fails | Auto-switch to backup gateway |
+
+## How It Works
+
+```
+┌─────────────────────────────────────────────────┐
+│         YOUR PAYMENT GATEWAY(S)                 │
+│   Stripe · PayPal · Razorpay · Adyen · Square   │
+│   PayFast · Braintree · Authorize.net · Any     │
+└──────────────────┬──────────────────────────────┘
+                   │  Webhook / API
+                   ▼
+┌─────────────────────────────────────────────────┐
+│       PAYMENT ORCHESTRATION PLATFORM            │
+│                                                 │
+│  ┌───────────┐  ┌───────────┐  ┌────────────┐  │
+│  │  Charge   │→ │   Send    │→ │    Pay     │  │
+│  │  Order    │  │  Invoice  │  │  Invoice   │  │
+│  └───────────┘  └───────────┘  └────────────┘  │
+│                                                 │
+│  • Gateway-agnostic automation actions          │
+│  • Smart routing across multiple gateways       │
+│  • Unified webhook processing                   │
+│  • Zero per-partner/per-gateway code            │
+└──────────────────┬──────────────────────────────┘
+                   │
+                   ▼
+        Products auto-activated
+        Invoices auto-reconciled
+        Partners live in minutes
+```
 
 ## Live Demo
 
-[View the interactive demo](https://sangythek190.github.io/byopg-payment-automation/)
+[View the interactive demo](https://sangythek190.github.io/payment-orchestration-platform/)
 
-## What This Demonstrates
+## Real-World Impact
 
-- **Infrastructure Design** — 3 reusable automation actions (Charge Order, Send Invoice, Pay Invoice) powering 3 partners across 3 continents with zero per-partner code
-- **Before/After Impact** — 6 manual steps and 24 hours reduced to zero human steps and under 5 minutes
-- **Interactive Flow** — Click-through simulation of the webhook-to-activation pipeline
-- **Platform Thinking** — One architecture serving multiple payment gateways, currencies, and billing models
-- **Market Validation** — Benchmarked against Amplitude 2025 retention data (time-to-first-value under 14 days = 80%+ month-12 retention)
+| Metric | Before | After |
+|--------|--------|-------|
+| Partner onboarding time | 24 hours | Under 5 minutes |
+| Manual steps required | 6 | 0 |
+| Per-partner custom code | Required | Zero |
+| Gateway coverage | Single | Any gateway |
 
-## Northstar Billing Data — Per-Partner Context
+### Production Data — Partners Using This Architecture
 
-| Partner | Paying SMBs | Vendasta Billing | Context |
-|---------|-------------|-----------------|---------|
-| Zoek | 1,879 | $73K | Revenue contracting — BYOPG is the retention lever that keeps activation friction near zero |
-| Telkom | 833 | $62K vendasta billing | $5.7M total monthly revenue — massive scale, PayFast integration unlocks automated billing |
-| Italia Online | 2,480 vendasta paying | $32K vendasta billing | Stripe Connect active — BYOPG automation is the next layer |
-| Kaseya | 2,137 | $188K | 260% revenue growth — BYOPG success proof: zero-friction billing drives expansion |
+| Partner | Paying Accounts | Monthly Billing | Gateway |
+|---------|----------------|----------------|---------|
+| Zoek | 1,879 | $73K | Bring Your Own Payment Gateway — retention lever |
+| Telkom | 833 | $62K (Vendasta) / $5.7M total | PayFast integration |
+| Italia Online | 2,480 | $32K | Stripe Connect |
+| Kaseya | 2,137 | $188K | 260% revenue growth proof |
 
-## Architecture
+## Supported Gateways
 
-```
-Partner Payment Gateway
-        |
-        v
-   [Webhook fires]
-        |
-        v
-   Charge Order ──> Send Invoice ──> Pay Invoice ──> AI Products Live
-   (match order)    (generate)       (mark paid)     (auto-activate)
+Bring any gateway that supports webhooks or API callbacks:
 
-   Time: under 5 minutes | Human steps: 0 | Per-partner code: 0
-```
+- **Stripe** — Cards, ACH, SEPA, and 135+ currencies
+- **PayPal** — Global consumer payments
+- **Razorpay** — India and Southeast Asia
+- **Adyen** — Enterprise multi-currency
+- **Square** — Point of sale and online
+- **PayFast** — South Africa and emerging markets
+- **Braintree** — PayPal-owned, Venmo support
+- **Authorize.net** — Legacy and enterprise
+- **Any webhook-capable gateway** — Plug in and go
+
+## Market Context
+
+Payment orchestration is the fastest-growing category in fintech infrastructure:
+
+| Benchmark | Industry Standard | This Platform |
+|-----------|------------------|---------------|
+| Time to first value | Under 14 days | Under 5 minutes |
+| Partner activation (7-day) | 40-60% | Automated on connect |
+| Webhook reliability | Retry + dead-letter | Retry + idempotency + dead-letter |
+| Gateway switching cost | Weeks of dev work | Configuration change |
 
 ## Author
 
-**Sangeetha K** — Product Manager, Integrations & Professional Services
+**Sangeetha K** — Product Manager, Integrations and Professional Services
 
 ## License
 
