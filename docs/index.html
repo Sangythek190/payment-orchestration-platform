@@ -1478,36 +1478,36 @@
             <div class="partner-grid">
                 <div class="partner-card">
                     <div class="partner-flag">&#127482;&#127480;</div>
-                    <div class="partner-name">Acme Commerce</div>
+                    <div class="partner-name">Zoek</div>
                     <div class="partner-gateway">Wix Payments</div>
                     <div class="partner-stats">
-                        1,879 paying businesses | $73K monthly billing<br>
+                        1,879 paying businesses | $73K billing<br>
                         200+ daily leads<br>
-                        E-commerce — orchestration is the retention lever
+                        Revenue contracting — orchestration is the retention lever
                     </div>
-                    <span class="partner-status delivered">First implementation — live and processing</span>
+                    <span class="partner-status delivered">First implementation — automation steps delivered</span>
                 </div>
                 <div class="partner-card">
                     <div class="partner-flag">&#127487;&#127462;</div>
-                    <div class="partner-name">CloudTel</div>
+                    <div class="partner-name">Telkom</div>
                     <div class="partner-gateway">PayFast</div>
                     <div class="partner-stats">
-                        833 paying businesses | $62K monthly billing<br>
+                        833 paying businesses | $62K platform billing<br>
                         $5.7M total monthly revenue<br>
-                        19 regional directories
+                        19 directories across South Africa
                     </div>
-                    <span class="partner-status pipeline">Integration requested — in pipeline</span>
+                    <span class="partner-status pipeline">Requested — in pipeline</span>
                 </div>
                 <div class="partner-card">
                     <div class="partner-flag">&#127470;&#127481;</div>
-                    <div class="partner-name">EuroMedia</div>
+                    <div class="partner-name">Italia Online</div>
                     <div class="partner-gateway">Stripe Connect (Standard)</div>
                     <div class="partner-stats">
-                        2,480 paying businesses | $32K monthly billing<br>
+                        2,480 paying businesses | $32K billing<br>
                         700+ sales agents<br>
-                        Stripe active — full orchestration next
+                        Stripe billing active — payment orchestration next
                     </div>
-                    <span class="partner-status next">Stripe active — full orchestration next</span>
+                    <span class="partner-status next">Stripe billing active — payment orchestration next</span>
                 </div>
             </div>
         </div>
@@ -1539,7 +1539,7 @@
                 </div>
                 <div class="impact-card">
                     <div class="impact-icon">&#128200;</div>
-                    <div class="impact-text">Enterprise proof case: 2,100+ paying businesses, 260% revenue growth — zero-friction billing infrastructure drives expansion at scale</div>
+                    <div class="impact-text">Kaseya proof case: 2,137 paying businesses, $188K billing, 260% revenue growth — zero-friction billing infrastructure drives expansion at enterprise scale</div>
                 </div>
             </div>
         </div>
@@ -1658,9 +1658,9 @@
         let currentScreen = 0;
         let selectedGateway = null;
         const gateways = {
-            wix: { name: 'Wix Payments', partner: 'Acme Commerce', short: 'Wix' },
-            payfast: { name: 'PayFast', partner: 'CloudTel', short: 'PayFast' },
-            stripe: { name: 'Stripe Connect (Standard)', partner: 'EuroMedia', short: 'Stripe' }
+            wix: { name: 'Wix Payments', partner: 'Zoek', short: 'Wix' },
+            payfast: { name: 'PayFast', partner: 'Telkom', short: 'PayFast' },
+            stripe: { name: 'Stripe Connect (Standard)', partner: 'Italia Online', short: 'Stripe' }
         };
 
         const stageMap = [
@@ -1715,17 +1715,17 @@
                     '<div class="gateway-card" data-gw="wix" onclick="window.__simSelectGW(\'wix\')">' +
                         '<div class="gateway-icon">&#128179;</div>' +
                         '<div class="gateway-name">Wix Payments</div>' +
-                        '<div class="gateway-desc">US e-commerce platform — 10,000+ businesses, 200+ daily leads</div>' +
+                        '<div class="gateway-desc">For Zoek (US e-commerce, 10,000+ small and medium businesses, 200+ daily leads)</div>' +
                     '</div>' +
                     '<div class="gateway-card" data-gw="payfast" onclick="window.__simSelectGW(\'payfast\')">' +
                         '<div class="gateway-icon">&#127462;</div>' +
                         '<div class="gateway-name">PayFast</div>' +
-                        '<div class="gateway-desc">South African telecom — 500,000+ subscribers, 19 directories</div>' +
+                        '<div class="gateway-desc">For Telkom (South Africa, 500,000+ subscribers, 19 directories)</div>' +
                     '</div>' +
                     '<div class="gateway-card" data-gw="stripe" onclick="window.__simSelectGW(\'stripe\')">' +
                         '<div class="gateway-icon">&#9889;</div>' +
                         '<div class="gateway-name">Stripe Connect (Standard)</div>' +
-                        '<div class="gateway-desc">European media network — 130,000 advertisers, 700+ sales agents</div>' +
+                        '<div class="gateway-desc">For Italia Online (Italy, 130,000 advertisers, 700+ sales agents)</div>' +
                     '</div>' +
                 '</div>' +
                 '<button class="sim-btn" id="btn-connect" disabled onclick="window.__simNext()">Connect Gateway &#8594;</button>' +
@@ -1834,7 +1834,7 @@
                         '<div class="auto-card-meta">Input: invoice_id &nbsp;|&nbsp; Output: invoice_id &nbsp;|&nbsp; "Marks paid, triggers product activation"</div>' +
                     '</div>' +
                 '</div>' +
-                '<div class="auto-note" id="auto-note" style="opacity:0;">Same 3 actions for ALL partners. No per-partner code. All connected partners use identical automation.</div>' +
+                '<div class="auto-note" id="auto-note" style="opacity:0;">Same 3 actions for ALL partners. No per-partner code. Zoek, Telkom, and Italia Online use identical automation.</div>' +
                 '<button class="sim-btn" id="btn-activate" style="display:none;opacity:0;" onclick="window.__simNext()">Activate &amp; Test &#8594;</button>' +
                 '</div>'
             );
@@ -1870,10 +1870,10 @@
                     '<div class="status-item"><span class="s-label">Status</span><span class="s-value green">ACTIVE &#10003;</span></div>' +
                     '<div class="status-item"><span class="s-label">Trigger</span><span class="s-value">Payment Webhook</span></div>' +
                     '<div class="status-item"><span class="s-label">Actions</span><span class="s-value">3 configured</span></div>' +
-                    '<div class="status-item"><span class="s-label">Partners</span><span class="s-value" style="font-size:11px;">Acme Commerce, CloudTel, EuroMedia</span></div>' +
+                    '<div class="status-item"><span class="s-label">Partners</span><span class="s-value" style="font-size:11px;">Zoek, Telkom, Italia Online</span></div>' +
                 '</div>' +
                 '<div style="margin-top:16px;">' +
-                    '<div style="padding:10px 14px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:13px;color:#4ade80;text-align:center;">Acme Commerce: Wix &bull; CloudTel: PayFast &bull; EuroMedia: Stripe</div>' +
+                    '<div style="padding:10px 14px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:13px;color:#4ade80;text-align:center;">Zoek: Wix Payments &bull; Telkom: PayFast (requested) &bull; Italia Online: Stripe Connect</div>' +
                 '</div>' +
                 '<p style="margin-top:16px;color:#818cf8;font-size:13px;">Advancing to live payment flow...</p>' +
                 '</div>'
@@ -2027,7 +2027,7 @@
                 '<div class="sim-screen-title">Customer Receives Email</div>' +
                 '<div class="email-mockup">' +
                     '<div class="email-header">' +
-                        '<div class="email-field">From: <span>noreply@orchestrator.io</span></div>' +
+                        '<div class="email-field">From: <span>noreply@platform.com</span></div>' +
                         '<div class="email-field">To: <span>sarah@brightsmiledental.com</span></div>' +
                         '<div class="email-subject">Your AI Chat Receptionist is now active!</div>' +
                     '</div>' +
