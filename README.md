@@ -2,6 +2,13 @@
 
 **Bring Your Own Payment Gateway** — plug in any payment gateway, automate payment workflows, and manage everything through one unified interface.
 
+## Live Demos
+
+| Page | What It Shows | Link |
+|------|--------------|------|
+| **Payment Orchestration Platform** | Framework overview — how the 3 automation actions work across any gateway | [View Platform Demo](https://sangythek190.github.io/payment-orchestration-platform/) |
+| **Zoek Implementation** | How it was implemented for Zoek — interactive architecture diagram, webhook payloads, PM decisions | [View Zoek Deep Dive](https://sangythek190.github.io/payment-orchestration-platform/zoek.html) |
+
 ## What Is This?
 
 A payment orchestration platform that lets you connect the payment gateway you already use — Stripe, PayPal, Razorpay, Adyen, Square, PayFast, or any other — and orchestrate payment automation without switching providers or writing per-gateway code.
@@ -18,40 +25,6 @@ A payment orchestration platform that lets you connect the payment gateway you a
 | Currency/region handling | Per-gateway logic sprawl | Unified rules engine |
 | Failover | Downtime when a gateway fails | Auto-switch to backup gateway |
 
-## How It Works
-
-```
-┌─────────────────────────────────────────────────┐
-│         YOUR PAYMENT GATEWAY(S)                 │
-│   Stripe · PayPal · Razorpay · Adyen · Square   │
-│   PayFast · Braintree · Authorize.net · Any     │
-└──────────────────┬──────────────────────────────┘
-                   │  Webhook / API
-                   ▼
-┌─────────────────────────────────────────────────┐
-│       PAYMENT ORCHESTRATION PLATFORM            │
-│                                                 │
-│  ┌───────────┐  ┌───────────┐  ┌────────────┐  │
-│  │  Charge   │→ │   Send    │→ │    Pay     │  │
-│  │  Order    │  │  Invoice  │  │  Invoice   │  │
-│  └───────────┘  └───────────┘  └────────────┘  │
-│                                                 │
-│  • Gateway-agnostic automation actions          │
-│  • Smart routing across multiple gateways       │
-│  • Unified webhook processing                   │
-│  • Zero per-partner/per-gateway code            │
-└──────────────────┬──────────────────────────────┘
-                   │
-                   ▼
-        Products auto-activated
-        Invoices auto-reconciled
-        Partners live in minutes
-```
-
-## Live Demo
-
-[View the interactive demo](https://sangythek190.github.io/payment-orchestration-platform/)
-
 ## Real-World Impact
 
 | Metric | Before | After |
@@ -63,16 +36,23 @@ A payment orchestration platform that lets you connect the payment gateway you a
 
 ### Production Data — Partners Using This Architecture
 
-| Partner | Paying Accounts | Monthly Billing | Gateway |
-|---------|----------------|----------------|---------|
-| Zoek | 1,879 | $73K | Bring Your Own Payment Gateway — retention lever |
-| Telkom | 833 | $62K (Vendasta) / $5.7M total | PayFast integration |
-| Italia Online | 2,480 | $32K | Stripe Connect |
-| Kaseya | 2,137 | $188K | 260% revenue growth proof |
+| Partner | Paying Accounts | Monthly Billing | Gateway | Status |
+|---------|----------------|----------------|---------|--------|
+| Zoek | 1,879 | $73K | Wix Payments | [View Implementation →](https://sangythek190.github.io/payment-orchestration-platform/zoek.html) |
+| Telkom | 833 | $62K / $5.7M total | PayFast | Live |
+| Italia Online | 2,480 | $32K | Stripe Connect | Live |
+| Kaseya | 2,137 | $188K | — | 260% revenue growth proof |
+
+### Zoek Implementation — Interactive Deep Dive
+
+The [Zoek deep dive](https://sangythek190.github.io/payment-orchestration-platform/zoek.html) shows:
+- **Interactive architecture diagram** — click any node to see inputs, outputs, and payload
+- **"Run Simulation" button** — watch the payment flow animate step by step
+- **Sample webhook JSON** — real payload structure with idempotency keys
+- **PM Architecture Decisions** — why Wix Payments, why OAuth 2.0, why 3 actions not 1, why zero custom code
+- **Reusability grid** — same 3 actions across Wix (US), PayFast (ZA), Stripe (EU)
 
 ## Supported Gateways
-
-Bring any gateway that supports webhooks or API callbacks:
 
 - **Stripe** — Cards, ACH, SEPA, and 135+ currencies
 - **PayPal** — Global consumer payments
@@ -80,25 +60,22 @@ Bring any gateway that supports webhooks or API callbacks:
 - **Adyen** — Enterprise multi-currency
 - **Square** — Point of sale and online
 - **PayFast** — South Africa and emerging markets
-- **Braintree** — PayPal-owned, Venmo support
-- **Authorize.net** — Legacy and enterprise
 - **Any webhook-capable gateway** — Plug in and go
 
-## Market Context
+## All Portfolio Demos
 
-Payment orchestration is the fastest-growing category in fintech infrastructure:
-
-| Benchmark | Industry Standard | This Platform |
-|-----------|------------------|---------------|
-| Time to first value | Under 14 days | Under 5 minutes |
-| Partner activation (7-day) | 40-60% | Automated on connect |
-| Webhook reliability | Retry + dead-letter | Retry + idempotency + dead-letter |
-| Gateway switching cost | Weeks of dev work | Configuration change |
+| Integration | Demo |
+|------------|------|
+| [Partner Playbook (All 5)](https://github.com/Sangythek190/partner-integration-playbook) | [View](https://sangythek190.github.io/partner-integration-playbook/) |
+| [Kaseya — 260% Revenue Growth](https://github.com/Sangythek190/kaseya-enterprise-integration) | [View](https://sangythek190.github.io/kaseya-enterprise-integration/) |
+| [Neighborly — 75.7% AI Penetration](https://github.com/Sangythek190/neighborly-integration-dashboard) | [View](https://sangythek190.github.io/neighborly-integration-dashboard/) |
+| [Italia Online — 21,600% AI Growth](https://github.com/Sangythek190/italia-online-integration) | [View](https://sangythek190.github.io/italia-online-integration/) |
+| [Telkom — 30+ Automations](https://github.com/Sangythek190/enterprise-automation-architecture) | [View](https://sangythek190.github.io/enterprise-automation-architecture/) |
+| [Social Media AI](https://github.com/Sangythek190/social-media-ai-portfolio) | [View](https://sangythek190.github.io/social-media-ai-portfolio/) |
 
 ## Author
 
-**Sangeetha K** — Product Manager, Integrations and Professional Services
-
-## License
-
-MIT
+**Sangeetha K** — AI Product Manager | Chennai, India
+- Email: sangythek@gmail.com
+- LinkedIn: [linkedin.com/in/SangeethaK](https://linkedin.com/in/SangeethaK)
+- GitHub: [github.com/Sangythek190](https://github.com/Sangythek190)

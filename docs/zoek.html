@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zoek Integration — BYOPG Architecture Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════
+   RESET & BASE
+   ════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-node: #1e293b;
+  --border: #334155;
+  --border-active: #3b82f6;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --blue: #3b82f6;
+  --blue-dim: #1e3a5f;
+  --emerald: #10b981;
+  --emerald-dim: #064e3b;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --purple: #a78bfa;
+  --cyan: #22d3ee;
+  --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Grid pattern background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ════════════════════════════════════════
+   TOP NAV BAR
+   ════════════════════════════════════════ */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 52px;
+  background: #0b1120;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.top-bar-left .project-name {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.top-bar-left .separator {
+  color: var(--text-muted);
+}
+
+.top-bar-left .sub-label {
+  color: var(--blue);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--emerald-dim);
+  color: var(--emerald);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--emerald);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ════════════════════════════════════════
+   METRICS STRIP
+   ════════════════════════════════════════ */
+.metrics-strip {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border);
+  background: #0b1120;
+  position: relative;
+  z-index: 10;
+}
+
+.metric-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 12px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+
+.metric-item:last-child { border-right: none; }
+
+.metric-value {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--blue);
+  line-height: 1.2;
+}
+
+.metric-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 4px;
+}
+
+/* ════════════════════════════════════════
+   LAYOUT CONTAINER
+   ════════════════════════════════════════ */
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+.section {
+  padding: 48px 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.section-header::before {
+  content: '//';
+  color: var(--blue);
+}
+
+.section-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ════════════════════════════════════════
+   ARCHITECTURE DIAGRAM
+   ════════════════════════════════════════ */
+.diagram-section {
+  padding: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.diagram-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.diagram-controls .section-header {
+  margin-bottom: 0;
+}
+
+.btn-simulate {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bg-primary);
+  background: var(--blue);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-simulate:hover { background: #2563eb; }
+.btn-simulate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-simulate .play-icon {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 9px;
+  border-color: transparent transparent transparent var(--bg-primary);
+}
+
+.diagram-container {
+  display: flex;
+  gap: 0;
+  min-height: 520px;
+}
+
+.diagram-canvas {
+  flex: 1;
+  position: relative;
+  background:
+    linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 520px;
+}
+
+/* SVG connections layer */
+.connections-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Nodes */
+.node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--bg-node);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+  min-width: 160px;
+  user-select: none;
+}
+
+.node:hover {
+  border-color: var(--blue);
+  background: #1a2744;
+}
+
+.node.active {
+  border-color: var(--blue);
+  background: #1a2744;
+  box-shadow: 0 0 0 1px var(--blue), 0 0 20px rgba(59, 130, 246, 0.15);
+}
+
+.node.simulating {
+  border-color: var(--emerald);
+  background: #0f2a1f;
+  box-shadow: 0 0 0 1px var(--emerald), 0 0 24px rgba(16, 185, 129, 0.2);
+}
+
+.node-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.node-icon.gateway { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
+.node-icon.auth { background: rgba(34, 211, 238, 0.15); color: var(--cyan); }
+.node-icon.webhook { background: rgba(59, 130, 246, 0.15); color: var(--blue); }
+.node-icon.action { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
+.node-icon.activation { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+
+.node-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.node-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.node-sublabel {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+/* Detail Panel */
+.detail-panel {
+  width: 360px;
+  min-width: 360px;
+  border-left: 1px solid var(--border);
+  background: var(--bg-secondary);
+  border-radius: 0 8px 8px 0;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+.detail-panel.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-empty-msg {
+  text-align: center;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 32px;
+  line-height: 1.8;
+}
+
+.detail-empty-msg .arrow {
+  font-size: 24px;
+  color: var(--blue);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.detail-content {
+  padding: 24px;
+}
+
+.detail-title {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 4px;
+}
+
+.detail-type {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 16px;
+}
+
+.detail-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.detail-section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.detail-list {
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+.detail-list li {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-list li::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--blue);
+  flex-shrink: 0;
+}
+
+.detail-payload {
+  background: #0b1120;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--text-secondary);
+}
+
+.detail-payload .key { color: var(--cyan); }
+.detail-payload .string { color: var(--emerald); }
+.detail-payload .number { color: var(--amber); }
+.detail-payload .bool { color: var(--purple); }
+.detail-payload .bracket { color: var(--text-muted); }
+
+/* ════════════════════════════════════════
+   WEBHOOK PAYLOAD SECTION
+   ════════════════════════════════════════ */
+.code-editor {
+  background: #0b1120;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 800px;
+}
+
+.code-editor-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #080d1a;
+  border-bottom: 1px solid var(--border);
+}
+
+.code-editor-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.code-editor-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+}
+
+.code-editor-dots span:nth-child(1) { background: #ef4444; }
+.code-editor-dots span:nth-child(2) { background: #f59e0b; }
+.code-editor-dots span:nth-child(3) { background: #10b981; }
+
+.code-editor-filename {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.code-editor-body {
+  padding: 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.8;
+  overflow-x: auto;
+  counter-reset: line;
+}
+
+.code-line {
+  display: flex;
+  align-items: flex-start;
+}
+
+.code-line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 32px;
+  text-align: right;
+  margin-right: 20px;
+  color: var(--text-muted);
+  opacity: 0.4;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.code-line .code-content {
+  flex: 1;
+  white-space: pre;
+}
+
+.syn-key { color: var(--cyan); }
+.syn-str { color: var(--emerald); }
+.syn-num { color: var(--amber); }
+.syn-bool { color: var(--purple); }
+.syn-null { color: var(--red); }
+.syn-brace { color: var(--text-muted); }
+.syn-comment { color: var(--text-muted); font-style: italic; }
+
+/* ════════════════════════════════════════
+   REUSABILITY SECTION
+   ════════════════════════════════════════ */
+.reuse-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.reuse-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  transition: border-color 0.2s;
+}
+
+.reuse-card:hover { border-color: var(--blue); }
+
+.reuse-card.highlight {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+
+.reuse-partner {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.reuse-gateway {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--blue);
+  margin-bottom: 16px;
+}
+
+.reuse-actions {
+  list-style: none;
+}
+
+.reuse-actions li {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 6px 0;
+  border-top: 1px solid rgba(51, 65, 85, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reuse-actions li:first-child { border-top: none; }
+
+.reuse-check {
+  color: var(--emerald);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.reuse-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.reuse-footer .count {
+  color: var(--emerald);
+  font-weight: 600;
+}
+
+/* ════════════════════════════════════════
+   PM DECISIONS SECTION
+   ════════════════════════════════════════ */
+.decisions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.decision-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  transition: border-color 0.2s;
+}
+
+.decision-card:hover { border-color: var(--border-active); }
+
+.decision-q {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.decision-q::before {
+  content: '?';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: var(--blue-dim);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.decision-a {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  padding-left: 28px;
+}
+
+/* ════════════════════════════════════════
+   FOOTER
+   ════════════════════════════════════════ */
+.footer {
+  padding: 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  background: #0b1120;
+}
+
+.footer-author {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.footer-name {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover { color: var(--blue); }
+
+/* ════════════════════════════════════════
+   ANIMATION: SIMULATION PULSE
+   ════════════════════════════════════════ */
+@keyframes node-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.node.simulating {
+  animation: node-pulse 1.2s ease-out;
+}
+
+/* SVG animation for edges */
+@keyframes dash-flow {
+  to { stroke-dashoffset: -20; }
+}
+
+.edge-line {
+  stroke: var(--border);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+  fill: none;
+  animation: dash-flow 1.5s linear infinite;
+}
+
+.edge-line.active {
+  stroke: var(--emerald);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.5));
+  transition: stroke 0.3s, stroke-width 0.3s;
+}
+
+@keyframes travel-pulse {
+  0% { r: 3; opacity: 1; }
+  100% { r: 6; opacity: 0; }
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .diagram-container { flex-direction: column; }
+  .detail-panel {
+    width: 100%;
+    min-width: auto;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    max-height: 360px;
+  }
+  .reuse-grid { grid-template-columns: 1fr; }
+  .decisions-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .top-bar { padding: 0 16px; font-size: 11px; }
+  .top-bar-left .sub-label { display: none; }
+  .metrics-strip { flex-wrap: wrap; }
+  .metric-item { min-width: 50%; }
+  .section { padding: 32px 16px; }
+  .diagram-section { padding: 16px; }
+  .diagram-canvas { min-height: 450px; }
+  .node { padding: 8px 12px; min-width: 130px; }
+  .node-label { font-size: 11px; }
+  .footer { flex-direction: column; gap: 16px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ TOP BAR ═══════════════ -->
+<header class="top-bar">
+  <div class="top-bar-left">
+    <span class="project-name">Zoek Integration</span>
+    <span class="separator">/</span>
+    <span class="sub-label">BYOPG First Implementation</span>
+  </div>
+  <span class="status-badge">Live</span>
+</header>
+
+<!-- ═══════════════ METRICS STRIP ═══════════════ -->
+<div class="metrics-strip">
+  <div class="metric-item">
+    <span class="metric-value">1,879</span>
+    <span class="metric-label">Paying SMBs</span>
+  </div>
+  <div class="metric-item">
+    <span class="metric-value">$73K</span>
+    <span class="metric-label">Monthly Billing</span>
+  </div>
+  <div class="metric-item">
+    <span class="metric-value">200+</span>
+    <span class="metric-label">Daily Leads</span>
+  </div>
+  <div class="metric-item">
+    <span class="metric-value">3</span>
+    <span class="metric-label">Automation Actions</span>
+  </div>
+  <div class="metric-item">
+    <span class="metric-value">&lt;5 min</span>
+    <span class="metric-label">Payment to Activation</span>
+  </div>
+  <div class="metric-item">
+    <span class="metric-value">0</span>
+    <span class="metric-label">Manual Steps</span>
+  </div>
+</div>
+
+<!-- ═══════════════ ARCHITECTURE DIAGRAM ═══════════════ -->
+<div class="diagram-section">
+  <div class="diagram-controls">
+    <div class="section-header">Architecture Diagram</div>
+    <button class="btn-simulate" id="btnSimulate" onclick="runSimulation()">
+      <span class="play-icon"></span>
+      Run Simulation
+    </button>
+  </div>
+
+  <div class="diagram-container">
+    <div class="diagram-canvas" id="diagramCanvas">
+      <!-- SVG layer for connection lines -->
+      <svg class="connections-svg" id="connectionsSvg"></svg>
+
+      <!-- Node: Wix Payments -->
+      <div class="node" id="node-wix" data-node="wix" onclick="selectNode('wix')" style="left: 40px; top: 40px;">
+        <div class="node-icon gateway">&#9041;</div>
+        <div class="node-text">
+          <span class="node-label">Wix Payments</span>
+          <span class="node-sublabel">Payment Gateway</span>
+        </div>
+      </div>
+
+      <!-- Node: OAuth 2.0 -->
+      <div class="node" id="node-oauth" data-node="oauth" onclick="selectNode('oauth')" style="left: 40px; top: 220px;">
+        <div class="node-icon auth">&#9919;</div>
+        <div class="node-text">
+          <span class="node-label">OAuth 2.0</span>
+          <span class="node-sublabel">Authentication</span>
+        </div>
+      </div>
+
+      <!-- Node: Webhook Receiver -->
+      <div class="node" id="node-webhook" data-node="webhook" onclick="selectNode('webhook')" style="left: 300px; top: 130px;">
+        <div class="node-icon webhook">&#10140;</div>
+        <div class="node-text">
+          <span class="node-label">Webhook Receiver</span>
+          <span class="node-sublabel">Event Ingestion</span>
+        </div>
+      </div>
+
+      <!-- Node: Charge Order -->
+      <div class="node" id="node-charge" data-node="charge" onclick="selectNode('charge')" style="left: 560px; top: 40px;">
+        <div class="node-icon action">&#9889;</div>
+        <div class="node-text">
+          <span class="node-label">Charge Order</span>
+          <span class="node-sublabel">Action 1</span>
+        </div>
+      </div>
+
+      <!-- Node: Send Invoice -->
+      <div class="node" id="node-invoice" data-node="invoice" onclick="selectNode('invoice')" style="left: 560px; top: 190px;">
+        <div class="node-icon action">&#9993;</div>
+        <div class="node-text">
+          <span class="node-label">Send Invoice</span>
+          <span class="node-sublabel">Action 2</span>
+        </div>
+      </div>
+
+      <!-- Node: Pay Invoice -->
+      <div class="node" id="node-pay" data-node="pay" onclick="selectNode('pay')" style="left: 560px; top: 340px;">
+        <div class="node-icon action">&#10004;</div>
+        <div class="node-text">
+          <span class="node-label">Pay Invoice</span>
+          <span class="node-sublabel">Action 3</span>
+        </div>
+      </div>
+
+      <!-- Node: Product Activation -->
+      <div class="node" id="node-activation" data-node="activation" onclick="selectNode('activation')" style="left: 300px; top: 400px;">
+        <div class="node-icon activation">&#9733;</div>
+        <div class="node-text">
+          <span class="node-label">Product Activation</span>
+          <span class="node-sublabel">SMB Onboarding</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail Panel -->
+    <div class="detail-panel empty" id="detailPanel">
+      <div class="detail-empty-msg" id="detailEmpty">
+        <span class="arrow">&larr;</span>
+        Click a node to inspect<br>its inputs, outputs, and payload
+      </div>
+      <div class="detail-content" id="detailContent" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ WEBHOOK PAYLOAD ═══════════════ -->
+<div class="section">
+  <div class="section-header">Sample Webhook Payload</div>
+  <div class="code-editor">
+    <div class="code-editor-bar">
+      <div class="code-editor-dots"><span></span><span></span><span></span></div>
+      <span class="code-editor-filename">webhook_charge_order.json</span>
+    </div>
+    <div class="code-editor-body">
+      <div class="code-line"><span class="code-content"><span class="syn-brace">{</span></span></div>
+      <div class="code-line"><span class="code-content">  <span class="syn-key">"event"</span>: <span class="syn-str">"payment.charge.completed"</span>,</span></div>
+      <div class="code-line"><span class="code-content">  <span class="syn-key">"timestamp"</span>: <span class="syn-str">"2026-08-12T14:30:00Z"</span>,</span></div>
+      <div class="code-line"><span class="code-content">  <span class="syn-key">"gateway"</span>: <span class="syn-str">"wix_payments"</span>,</span></div>
+      <div class="code-line"><span class="code-content">  <span class="syn-key">"partner"</span>: <span class="syn-str">"zoek"</span>,</span></div>
+      <div class="code-line"><span class="code-content">  <span class="syn-key">"data"</span>: <span class="syn-brace">{</span></span></div>
+      <div class="code-line"><span class="code-content">    <span class="syn-key">"order_id"</span>: <span class="syn-str">"ORD-2026-08-00421"</span>,</span></div>
+      <div class="code-line"><span class="code-content">    <span class="syn-key">"amount"</span>: <span class="syn-num">149.99</span>,</span></div>
+      <div class="code-line"><span class="code-content">    <span class="syn-key">"currency"</span>: <span class="syn-str">"USD"</span>,</span></div>
+      <div class="code-line"><span class="code-content">    <span class="syn-key">"smb_id"</span>: <span class="syn-str">"AG-ZK-10421"</span>,</span></div>
+      <div class="code-line"><span class="code-content">    <span class="syn-key">"status"</span>: <span class="syn-str">"completed"</span>,</span></div>
+      <div class="code-line"><span class="code-content">    <span class="syn-key">"idempotency_key"</span>: <span class="syn-str">"idem_8f3a2b1c"</span>,</span></div>
+      <div class="code-line"><span class="code-content">    <span class="syn-key">"retry_count"</span>: <span class="syn-num">0</span>,</span></div>
+      <div class="code-line"><span class="code-content">    <span class="syn-key">"metadata"</span>: <span class="syn-brace">{</span></span></div>
+      <div class="code-line"><span class="code-content">      <span class="syn-key">"automation_action"</span>: <span class="syn-str">"charge_order"</span>,</span></div>
+      <div class="code-line"><span class="code-content">      <span class="syn-key">"custom_code_required"</span>: <span class="syn-bool">false</span></span></div>
+      <div class="code-line"><span class="code-content">    <span class="syn-brace">}</span></span></div>
+      <div class="code-line"><span class="code-content">  <span class="syn-brace">}</span></span></div>
+      <div class="code-line"><span class="code-content"><span class="syn-brace">}</span></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ REUSABILITY ═══════════════ -->
+<div class="section">
+  <div class="section-header">Reusable Architecture — Zero Per-Partner Code</div>
+  <div class="reuse-grid">
+    <div class="reuse-card highlight">
+      <div class="reuse-partner">Zoek</div>
+      <div class="reuse-gateway">Gateway: Wix Payments</div>
+      <ul class="reuse-actions">
+        <li><span class="reuse-check">&#10003;</span> Charge Order</li>
+        <li><span class="reuse-check">&#10003;</span> Send Invoice</li>
+        <li><span class="reuse-check">&#10003;</span> Pay Invoice</li>
+      </ul>
+      <div class="reuse-footer">Market: US &middot; Currency: <span class="count">USD</span></div>
+    </div>
+    <div class="reuse-card">
+      <div class="reuse-partner">Telkom</div>
+      <div class="reuse-gateway">Gateway: PayFast</div>
+      <ul class="reuse-actions">
+        <li><span class="reuse-check">&#10003;</span> Charge Order</li>
+        <li><span class="reuse-check">&#10003;</span> Send Invoice</li>
+        <li><span class="reuse-check">&#10003;</span> Pay Invoice</li>
+      </ul>
+      <div class="reuse-footer">Market: ZA &middot; Currency: <span class="count">ZAR</span></div>
+    </div>
+    <div class="reuse-card">
+      <div class="reuse-partner">Italia Online</div>
+      <div class="reuse-gateway">Gateway: Stripe</div>
+      <ul class="reuse-actions">
+        <li><span class="reuse-check">&#10003;</span> Charge Order</li>
+        <li><span class="reuse-check">&#10003;</span> Send Invoice</li>
+        <li><span class="reuse-check">&#10003;</span> Pay Invoice</li>
+      </ul>
+      <div class="reuse-footer">Market: EU &middot; Currency: <span class="count">EUR</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PM DECISIONS ═══════════════ -->
+<div class="section">
+  <div class="section-header">Product Decisions</div>
+  <div class="decisions-grid">
+    <div class="decision-card">
+      <div class="decision-q">Why Wix Payments?</div>
+      <div class="decision-a">Zoek's 10,000+ SMBs already use Wix for their e-commerce storefronts. Wix Payments is the native gateway embedded in that ecosystem. Building on the existing payment rail eliminates onboarding friction and reduces time-to-value to under 7 days.</div>
+    </div>
+    <div class="decision-card">
+      <div class="decision-q">Why OAuth 2.0?</div>
+      <div class="decision-a">API key rotation at scale (10,000+ accounts) is operationally expensive. OAuth 2.0 with refresh tokens provides automatic credential management, scoped permissions, and a standard revocation flow. It also aligns with Wix's own authentication model.</div>
+    </div>
+    <div class="decision-card">
+      <div class="decision-q">Why 3 Actions, Not 1?</div>
+      <div class="decision-a">The payment lifecycle has three distinct states: immediate charge (point of sale), deferred billing (invoice sent), and payment collection (invoice paid). Collapsing these into one action forces partners to build workarounds. Three granular actions cover 95% of e-commerce payment workflows.</div>
+    </div>
+    <div class="decision-card">
+      <div class="decision-q">Why Zero Custom Code?</div>
+      <div class="decision-a">BYOPG was designed as a reusable automation architecture from day one. The same three actions work across Wix, PayFast, and Stripe with only configuration changes. This cuts onboarding time for new partners from weeks to days and eliminates per-partner maintenance debt.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="footer">
+  <div class="footer-author">
+    <span class="footer-name">Sangeetha K</span>
+    <span>Product Manager &middot; Professional Services and Integrations</span>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/Sangythek190" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://linkedin.com/in/SangeethaK" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</footer>
+
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+<script>
+// Node data definitions
+const nodeData = {
+  wix: {
+    title: 'Wix Payments',
+    type: 'Payment Gateway',
+    desc: 'The native payment processor embedded in Zoek\'s e-commerce platform. Handles credit card processing, fraud detection, and PCI compliance for 10,000+ SMB storefronts. Serves as the first BYOPG gateway implementation.',
+    inputs: ['Merchant credentials (via OAuth)', 'Payment amount and currency (USD)', 'Customer billing details', 'Order reference ID'],
+    outputs: ['Transaction ID', 'Payment status webhook', 'Settlement confirmation', 'Refund capability'],
+    payload: `<span class="key">"gateway"</span>: <span class="string">"wix_payments"</span>,\n<span class="key">"merchant_id"</span>: <span class="string">"WIX-MRC-10421"</span>,\n<span class="key">"supported_methods"</span>: [\n  <span class="string">"credit_card"</span>,\n  <span class="string">"debit_card"</span>\n],\n<span class="key">"pci_compliant"</span>: <span class="bool">true</span>`
+  },
+  oauth: {
+    title: 'OAuth 2.0 Connection',
+    type: 'Authentication Layer',
+    desc: 'Manages secure authorization between the platform and Wix Payments. Uses the standard OAuth 2.0 authorization code flow with PKCE, scoped permissions, and automatic token refresh. Eliminates manual API key rotation across 10,000+ accounts.',
+    inputs: ['Client ID and secret', 'Authorization code', 'Redirect URI', 'Requested scopes'],
+    outputs: ['Access token (1-hour TTL)', 'Refresh token', 'Scope confirmation', 'Token expiry timestamp'],
+    payload: `<span class="key">"grant_type"</span>: <span class="string">"authorization_code"</span>,\n<span class="key">"scope"</span>: <span class="string">"payments.charge payments.invoice"</span>,\n<span class="key">"token_type"</span>: <span class="string">"Bearer"</span>,\n<span class="key">"expires_in"</span>: <span class="number">3600</span>,\n<span class="key">"refresh_token"</span>: <span class="string">"rt_9f8e7d6c5b..."</span>`
+  },
+  webhook: {
+    title: 'Webhook Receiver',
+    type: 'Event Ingestion',
+    desc: 'Receives real-time payment events from Wix Payments via HTTPS POST. Validates signatures, enforces idempotency keys to prevent duplicate processing, and routes events to the correct automation action. Implements retry logic with exponential backoff and a dead-letter queue for failed deliveries.',
+    inputs: ['HTTPS POST from Wix', 'HMAC signature header', 'Event type identifier', 'Idempotency key'],
+    outputs: ['200 OK acknowledgment', 'Event routed to action', 'Dead-letter queue (on failure)', 'Processing log entry'],
+    payload: `<span class="key">"endpoint"</span>: <span class="string">"/webhooks/byopg/wix"</span>,\n<span class="key">"method"</span>: <span class="string">"POST"</span>,\n<span class="key">"signature_header"</span>: <span class="string">"X-Wix-Signature"</span>,\n<span class="key">"retry_policy"</span>: <span class="bracket">{</span>\n  <span class="key">"max_retries"</span>: <span class="number">5</span>,\n  <span class="key">"backoff"</span>: <span class="string">"exponential"</span>\n<span class="bracket">}</span>`
+  },
+  charge: {
+    title: 'Charge Order',
+    type: 'Automation Action 1',
+    desc: 'Executes an immediate payment charge against a customer\'s stored payment method. Used for point-of-sale and instant checkout flows. Validates the order amount, checks for sufficient authorization, and processes the charge through the connected gateway. Returns a transaction receipt.',
+    inputs: ['Order ID', 'Charge amount (USD)', 'Customer payment token', 'Merchant account reference'],
+    outputs: ['Transaction ID', 'Charge status (success/failed)', 'Receipt URL', 'Settlement timestamp'],
+    payload: `<span class="key">"action"</span>: <span class="string">"charge_order"</span>,\n<span class="key">"order_id"</span>: <span class="string">"ORD-2026-08-00421"</span>,\n<span class="key">"amount"</span>: <span class="number">149.99</span>,\n<span class="key">"currency"</span>: <span class="string">"USD"</span>,\n<span class="key">"status"</span>: <span class="string">"completed"</span>`
+  },
+  invoice: {
+    title: 'Send Invoice',
+    type: 'Automation Action 2',
+    desc: 'Generates and delivers a payment invoice to the end customer. Supports customizable line items, tax calculations, and payment terms. The invoice includes a secure payment link that routes back through the connected gateway. Tracks delivery status and open/click events.',
+    inputs: ['Customer email', 'Line items array', 'Tax rate', 'Payment terms (net days)'],
+    outputs: ['Invoice ID', 'Payment link URL', 'Delivery confirmation', 'Invoice status (sent/viewed/paid)'],
+    payload: `<span class="key">"action"</span>: <span class="string">"send_invoice"</span>,\n<span class="key">"invoice_id"</span>: <span class="string">"INV-2026-08-00198"</span>,\n<span class="key">"to"</span>: <span class="string">"customer@example.com"</span>,\n<span class="key">"total"</span>: <span class="number">299.00</span>,\n<span class="key">"due_date"</span>: <span class="string">"2026-09-12"</span>`
+  },
+  pay: {
+    title: 'Pay Invoice',
+    type: 'Automation Action 3',
+    desc: 'Processes payment against an existing open invoice. Triggered when a customer clicks the payment link or when an automated collection rule fires. Validates the invoice is still open, confirms the amount matches, processes the payment, and updates the invoice status to paid.',
+    inputs: ['Invoice ID', 'Payment method token', 'Amount to pay', 'Customer confirmation'],
+    outputs: ['Payment confirmation ID', 'Updated invoice status', 'Receipt sent to customer', 'Revenue recognition event'],
+    payload: `<span class="key">"action"</span>: <span class="string">"pay_invoice"</span>,\n<span class="key">"invoice_id"</span>: <span class="string">"INV-2026-08-00198"</span>,\n<span class="key">"amount_paid"</span>: <span class="number">299.00</span>,\n<span class="key">"payment_method"</span>: <span class="string">"credit_card"</span>,\n<span class="key">"status"</span>: <span class="string">"paid"</span>`
+  },
+  activation: {
+    title: 'Product Activation',
+    type: 'SMB Onboarding',
+    desc: 'The entry point for SMB onboarding. When a Zoek SMB activates the payment product in their account, this node provisions their Wix Payments connection, triggers the OAuth flow, and registers the webhook endpoints. The SMB is payment-ready within minutes, not days.',
+    inputs: ['SMB account ID (AG-xxx)', 'Partner ID (Zoek)', 'Product SKU', 'Activation trigger'],
+    outputs: ['OAuth flow initiated', 'Webhook endpoints registered', 'SMB dashboard provisioned', 'Activation confirmation email'],
+    payload: `<span class="key">"event"</span>: <span class="string">"product.activated"</span>,\n<span class="key">"smb_id"</span>: <span class="string">"AG-ZK-10421"</span>,\n<span class="key">"product"</span>: <span class="string">"byopg_wix_payments"</span>,\n<span class="key">"activated_at"</span>: <span class="string">"2026-08-12T14:00:00Z"</span>,\n<span class="key">"status"</span>: <span class="string">"provisioning"</span>`
+  }
+};
+
+// Connection definitions: [from, to]
+const connections = [
+  ['wix', 'webhook'],
+  ['oauth', 'wix'],
+  ['oauth', 'webhook'],
+  ['webhook', 'charge'],
+  ['webhook', 'invoice'],
+  ['webhook', 'pay'],
+  ['activation', 'oauth'],
+  ['activation', 'webhook']
+];
+
+// Simulation sequence
+const simulationOrder = ['activation', 'oauth', 'wix', 'webhook', 'charge', 'invoice', 'pay'];
+const simulationEdges = [
+  ['activation', 'oauth'],
+  ['oauth', 'wix'],
+  ['oauth', 'webhook'],
+  ['wix', 'webhook'],
+  ['webhook', 'charge'],
+  ['webhook', 'invoice'],
+  ['webhook', 'pay']
+];
+
+let activeNode = null;
+let isSimulating = false;
+
+// Get center point of a node element
+function getNodeCenter(nodeId) {
+  const el = document.getElementById('node-' + nodeId);
+  const canvas = document.getElementById('diagramCanvas');
+  if (!el || !canvas) return { x: 0, y: 0 };
+  const canvasRect = canvas.getBoundingClientRect();
+  const nodeRect = el.getBoundingClientRect();
+  return {
+    x: nodeRect.left - canvasRect.left + nodeRect.width / 2,
+    y: nodeRect.top - canvasRect.top + nodeRect.height / 2
+  };
+}
+
+// Draw all connections
+function drawConnections() {
+  const svg = document.getElementById('connectionsSvg');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+
+  connections.forEach(([from, to]) => {
+    const start = getNodeCenter(from);
+    const end = getNodeCenter(to);
+
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', start.x);
+    line.setAttribute('y1', start.y);
+    line.setAttribute('x2', end.x);
+    line.setAttribute('y2', end.y);
+    line.setAttribute('class', 'edge-line');
+    line.setAttribute('data-from', from);
+    line.setAttribute('data-to', to);
+    svg.appendChild(line);
+  });
+}
+
+// Select a node and show details
+function selectNode(nodeId) {
+  if (isSimulating) return;
+
+  // Toggle active state
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+  const nodeEl = document.getElementById('node-' + nodeId);
+  nodeEl.classList.add('active');
+  activeNode = nodeId;
+
+  // Show detail panel
+  const panel = document.getElementById('detailPanel');
+  const empty = document.getElementById('detailEmpty');
+  const content = document.getElementById('detailContent');
+  const data = nodeData[nodeId];
+
+  panel.classList.remove('empty');
+  empty.style.display = 'none';
+  content.style.display = 'block';
+
+  let inputsHtml = data.inputs.map(i => `<li>${i}</li>`).join('');
+  let outputsHtml = data.outputs.map(o => `<li>${o}</li>`).join('');
+
+  content.innerHTML = `
+    <div class="detail-title">${data.title}</div>
+    <div class="detail-type">${data.type}</div>
+    <div class="detail-desc">${data.desc}</div>
+    <div class="detail-section-label">Inputs</div>
+    <ul class="detail-list">${inputsHtml}</ul>
+    <div class="detail-section-label">Outputs</div>
+    <ul class="detail-list">${outputsHtml}</ul>
+    <div class="detail-section-label">Payload Example</div>
+    <div class="detail-payload">${data.payload}</div>
+  `;
+}
+
+// Run simulation
+async function runSimulation() {
+  if (isSimulating) return;
+  isSimulating = true;
+
+  const btn = document.getElementById('btnSimulate');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="play-icon"></span> Simulating...';
+
+  // Clear active states
+  document.querySelectorAll('.node').forEach(n => {
+    n.classList.remove('active');
+    n.classList.remove('simulating');
+  });
+  document.querySelectorAll('.edge-line').forEach(l => l.classList.remove('active'));
+
+  // Reset detail panel
+  const panel = document.getElementById('detailPanel');
+  const empty = document.getElementById('detailEmpty');
+  const content = document.getElementById('detailContent');
+  panel.classList.add('empty');
+  empty.style.display = 'block';
+  empty.innerHTML = '<span class="arrow">&#9654;</span>Simulation running...<br>Watch the data flow';
+  content.style.display = 'none';
+
+  // Sequentially light up nodes
+  for (let i = 0; i < simulationOrder.length; i++) {
+    const nodeId = simulationOrder[i];
+    const nodeEl = document.getElementById('node-' + nodeId);
+
+    // Activate connecting edges
+    if (i > 0) {
+      const fromId = simulationOrder[i - 1];
+      // Find relevant edges to light up
+      simulationEdges.forEach(([from, to]) => {
+        if (to === nodeId && simulationOrder.indexOf(from) < i) {
+          const edgeLine = document.querySelector(`.edge-line[data-from="${from}"][data-to="${to}"]`);
+          if (edgeLine) edgeLine.classList.add('active');
+        }
+      });
+    }
+
+    // Pulse the node
+    nodeEl.classList.add('simulating');
+
+    // Wait
+    await new Promise(resolve => setTimeout(resolve, 1200));
+  }
+
+  // Hold final state briefly
+  await new Promise(resolve => setTimeout(resolve, 800));
+
+  // Show completion
+  empty.innerHTML = '<span class="arrow" style="color: var(--emerald);">&#10003;</span>Simulation complete<br>All 3 actions executed successfully';
+
+  // Reset after a pause
+  await new Promise(resolve => setTimeout(resolve, 2000));
+
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('simulating'));
+  document.querySelectorAll('.edge-line').forEach(l => l.classList.remove('active'));
+  empty.innerHTML = '<span class="arrow">&larr;</span>Click a node to inspect<br>its inputs, outputs, and payload';
+
+  btn.disabled = false;
+  btn.innerHTML = '<span class="play-icon"></span> Run Simulation';
+  isSimulating = false;
+}
+
+// Initialize
+window.addEventListener('load', () => {
+  drawConnections();
+});
+
+window.addEventListener('resize', () => {
+  drawConnections();
+});
+</script>
+
+</body>
+</html>
